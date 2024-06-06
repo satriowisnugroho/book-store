@@ -9,6 +9,8 @@ import (
 
 	// Swagger docs.
 	_ "github.com/satriowisnugroho/book-store/docs"
+	"github.com/satriowisnugroho/book-store/internal/usecase"
+	"github.com/satriowisnugroho/book-store/pkg/logger"
 )
 
 // NewRouter -.
@@ -18,7 +20,11 @@ import (
 // @version     1.0
 // @host        localhost:9999
 // @BasePath    /v1
-func NewRouter(handler *gin.Engine) {
+func NewRouter(
+	handler *gin.Engine,
+	l logger.LoggerInterface,
+	bu usecase.BookUsecaseInterface,
+) {
 	// Options
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
@@ -29,4 +35,10 @@ func NewRouter(handler *gin.Engine) {
 
 	// K8s probe
 	handler.GET("/healthz", func(c *gin.Context) { c.Status(http.StatusOK) })
+
+	// Routers
+	h := handler.Group("/v1")
+	{
+		newBookHandler(h, l, bu)
+	}
 }
