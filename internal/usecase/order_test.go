@@ -13,13 +13,13 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestGetBooks(t *testing.T) {
+func TestGetOrdersByUserID(t *testing.T) {
 	testcases := []struct {
-		name         string
-		ctx          context.Context
-		rGetBooksRes []*entity.Book
-		rGetBooksErr error
-		wantErr      bool
+		name                  string
+		ctx                   context.Context
+		rGetOrdersByUserIDRes []*entity.Order
+		rGetOrdersByUserIDErr error
+		wantErr               bool
 	}{
 		{
 			name:    "deadline context",
@@ -27,10 +27,10 @@ func TestGetBooks(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name:         "failed to get books",
-			ctx:          context.Background(),
-			rGetBooksErr: errors.New("error get books"),
-			wantErr:      true,
+			name:                  "failed to get orders",
+			ctx:                   context.Background(),
+			rGetOrdersByUserIDErr: errors.New("error get orders by user id"),
+			wantErr:               true,
 		},
 		{
 			name:    "success",
@@ -41,11 +41,11 @@ func TestGetBooks(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			bookRepo := &testmock.BookRepositoryInterface{}
-			bookRepo.On("GetBooks", mock.Anything).Return(tc.rGetBooksRes, tc.rGetBooksErr)
+			orderRepo := &testmock.OrderRepositoryInterface{}
+			orderRepo.On("GetOrdersByUserID", mock.Anything, mock.Anything).Return(tc.rGetOrdersByUserIDRes, tc.rGetOrdersByUserIDErr)
 
-			uc := usecase.NewBookUsecase(bookRepo)
-			_, err := uc.GetBooks(tc.ctx)
+			uc := usecase.NewOrderUsecase(orderRepo)
+			_, err := uc.GetOrdersByUserID(tc.ctx)
 			assert.Equal(t, tc.wantErr, err != nil)
 		})
 	}
