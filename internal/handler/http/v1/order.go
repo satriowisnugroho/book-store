@@ -24,7 +24,7 @@ func newOrderHandler(handler *gin.RouterGroup, l logger.LoggerInterface, bu usec
 
 // @Summary     Show History Order
 // @Description An API to show history of orders
-// @ID          list
+// @ID          order list
 // @Tags  	    order
 // @Accept      json
 // @Produce     json
