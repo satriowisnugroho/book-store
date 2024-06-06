@@ -61,6 +61,7 @@ func (r *BookRepository) fetch(ctx context.Context, query string, args ...interf
 // GetBooks query to get list of books
 func (r *BookRepository) GetBooks(ctx context.Context) ([]*entity.Book, error) {
 	functionName := "BookRepository.GetBooks"
+
 	if err := helper.CheckDeadline(ctx); err != nil {
 		return []*entity.Book{}, errors.Wrap(err, functionName)
 	}

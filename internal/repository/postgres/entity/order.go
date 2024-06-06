@@ -8,13 +8,13 @@ import (
 
 // Order struct holds order database representative
 type Order struct {
-	ID         int64     `db:"id"`
-	UserID     int32     `db:"user_id"`
-	BookID     int32     `db:"book_id"`
-	Quantity   int32     `db:"quantity"`
-	Price      int32     `db:"price"`
-	Fee        int32     `db:"fee"`
-	TotalPrice int32     `db:"total_price"`
+	ID         int       `db:"id"`
+	UserID     int       `db:"user_id"`
+	BookID     int       `db:"book_id"`
+	Quantity   int       `db:"quantity"`
+	Price      int       `db:"price"`
+	Fee        int       `db:"fee"`
+	TotalPrice int       `db:"total_price"`
 	CreatedAt  time.Time `db:"created_at"`
 	UpdatedAt  time.Time `db:"updated_at"`
 }

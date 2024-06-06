@@ -8,10 +8,10 @@ import (
 
 // Book struct holds book database representative
 type Book struct {
-	ID        int64     `db:"id"`
+	ID        int       `db:"id"`
 	Isbn      string    `db:"isbn"`
 	Title     string    `db:"title"`
-	Price     int32     `db:"price"`
+	Price     int       `db:"price"`
 	CreatedAt time.Time `db:"created_at"`
 	UpdatedAt time.Time `db:"updated_at"`
 }

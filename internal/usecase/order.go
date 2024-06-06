@@ -33,7 +33,7 @@ func (uc *OrderUsecase) GetOrdersByUserID(ctx context.Context) ([]*entity.Order,
 	}
 
 	// TODO: Get from current user
-	userID := int64(1)
+	userID := 1
 	orders, err := uc.repo.GetOrdersByUserID(ctx, userID)
 	if err != nil {
 		return nil, errors.Wrap(fmt.Errorf("uc.repo.GetOrdersByUserID: %w", err), functionName)

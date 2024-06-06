@@ -14,8 +14,26 @@ type OrderRepositoryInterface struct {
 	mock.Mock
 }
 
+// CreateOrder provides a mock function with given fields: ctx, order
+func (_m *OrderRepositoryInterface) CreateOrder(ctx context.Context, order *entity.Order) error {
+	ret := _m.Called(ctx, order)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateOrder")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *entity.Order) error); ok {
+		r0 = rf(ctx, order)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // GetOrdersByUserID provides a mock function with given fields: ctx, userID
-func (_m *OrderRepositoryInterface) GetOrdersByUserID(ctx context.Context, userID int64) ([]*entity.Order, error) {
+func (_m *OrderRepositoryInterface) GetOrdersByUserID(ctx context.Context, userID int) ([]*entity.Order, error) {
 	ret := _m.Called(ctx, userID)
 
 	if len(ret) == 0 {
@@ -24,10 +42,10 @@ func (_m *OrderRepositoryInterface) GetOrdersByUserID(ctx context.Context, userI
 
 	var r0 []*entity.Order
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64) ([]*entity.Order, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int) ([]*entity.Order, error)); ok {
 		return rf(ctx, userID)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64) []*entity.Order); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int) []*entity.Order); ok {
 		r0 = rf(ctx, userID)
 	} else {
 		if ret.Get(0) != nil {
@@ -35,7 +53,7 @@ func (_m *OrderRepositoryInterface) GetOrdersByUserID(ctx context.Context, userI
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
 		r1 = rf(ctx, userID)
 	} else {
 		r1 = ret.Error(1)
