@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
@@ -14,7 +15,8 @@ import (
 
 // OrderRepositoryInterface define contract for order related functions to repository
 type OrderRepositoryInterface interface {
-	GetOrdersByUserID(ctx context.Context, userID int64) ([]*entity.Order, error)
+	CreateOrder(ctx context.Context, order *entity.Order) error
+	GetOrdersByUserID(ctx context.Context, userID int) ([]*entity.Order, error)
 }
 
 // OrderRepository holds database connection
@@ -29,6 +31,11 @@ var (
 	OrderColumns = []string{"id", "user_id", "book_id", "quantity", "price", "fee", "total_price", "created_at", "updated_at"}
 	// OrderAttributes hold string format of all orders table columns
 	OrderAttributes = strings.Join(OrderColumns, ", ")
+
+	// OrderCreationColumns list all columns used for create order
+	OrderCreationColumns = OrderColumns[1:]
+	// OrderCreationAttributes hold string format of all creation order columns
+	OrderCreationAttributes = strings.Join(OrderCreationColumns, ", ")
 )
 
 // NewOrderRepository create initiate order repository with given database
@@ -58,9 +65,41 @@ func (r *OrderRepository) fetch(ctx context.Context, query string, args ...inter
 	return result, nil
 }
 
+// CreateOrder insert order data into database
+func (r *OrderRepository) CreateOrder(ctx context.Context, order *entity.Order) error {
+	functionName := "OrderRepository.CreateOrder"
+
+	if err := helper.CheckDeadline(ctx); err != nil {
+		return errors.Wrap(err, functionName)
+	}
+
+	now := time.Now()
+	order.CreatedAt = now
+	order.UpdatedAt = now
+
+	query := fmt.Sprintf(`INSERT INTO %s (%s) VALUES (%s) RETURNING id`, OrderTableName, OrderCreationAttributes, EnumeratedBindvars(OrderCreationColumns))
+
+	err := r.db.QueryRowContext(ctx, query,
+		order.UserID,
+		order.BookID,
+		order.Quantity,
+		order.Price,
+		order.Fee,
+		order.TotalPrice,
+		order.CreatedAt,
+		order.UpdatedAt,
+	).Scan(&order.ID)
+	if err != nil {
+		return errors.Wrap(err, functionName)
+	}
+
+	return nil
+}
+
 // GetOrders query to get list of orders by user ID
-func (r *OrderRepository) GetOrdersByUserID(ctx context.Context, userID int64) ([]*entity.Order, error) {
+func (r *OrderRepository) GetOrdersByUserID(ctx context.Context, userID int) ([]*entity.Order, error) {
 	functionName := "OrderRepository.GetOrdersByUserID"
+
 	if err := helper.CheckDeadline(ctx); err != nil {
 		return []*entity.Order{}, errors.Wrap(err, functionName)
 	}
