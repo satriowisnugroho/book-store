@@ -14,9 +14,9 @@ type OrderUsecaseInterface struct {
 	mock.Mock
 }
 
-// GetOrdersByUserID provides a mock function with given fields: ctx, userID
-func (_m *OrderUsecaseInterface) GetOrdersByUserID(ctx context.Context, userID int64) ([]*entity.Order, error) {
-	ret := _m.Called(ctx, userID)
+// GetOrdersByUserID provides a mock function with given fields: ctx
+func (_m *OrderUsecaseInterface) GetOrdersByUserID(ctx context.Context) ([]*entity.Order, error) {
+	ret := _m.Called(ctx)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetOrdersByUserID")
@@ -24,19 +24,19 @@ func (_m *OrderUsecaseInterface) GetOrdersByUserID(ctx context.Context, userID i
 
 	var r0 []*entity.Order
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64) ([]*entity.Order, error)); ok {
-		return rf(ctx, userID)
+	if rf, ok := ret.Get(0).(func(context.Context) ([]*entity.Order, error)); ok {
+		return rf(ctx)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64) []*entity.Order); ok {
-		r0 = rf(ctx, userID)
+	if rf, ok := ret.Get(0).(func(context.Context) []*entity.Order); ok {
+		r0 = rf(ctx)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]*entity.Order)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
-		r1 = rf(ctx, userID)
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(ctx)
 	} else {
 		r1 = ret.Error(1)
 	}

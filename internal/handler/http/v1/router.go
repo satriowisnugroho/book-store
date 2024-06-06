@@ -24,6 +24,7 @@ func NewRouter(
 	handler *gin.Engine,
 	l logger.LoggerInterface,
 	bu usecase.BookUsecaseInterface,
+	ou usecase.OrderUsecaseInterface,
 ) {
 	// Options
 	handler.Use(gin.Logger())
@@ -40,5 +41,6 @@ func NewRouter(
 	h := handler.Group("/v1")
 	{
 		newBookHandler(h, l, bu)
+		newOrderHandler(h, l, ou)
 	}
 }
