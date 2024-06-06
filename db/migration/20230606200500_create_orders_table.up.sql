@@ -1,4 +1,5 @@
 CREATE TABLE "orders" (
+  -- "id" bigint PRIMARY KEY AUTO_INCREMENT,
   "id" bigint PRIMARY KEY,
   "user_id" bigint NOT NULL,
   "book_id" bigint NOT NULL,
@@ -6,8 +7,8 @@ CREATE TABLE "orders" (
   "price" integer NOT NULL,
   "fee" integer NOT NULL,
   "total_price" integer NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
-  "updated_at" timestamptz NOT NULL DEFAULT (now())
+  "created_at" timestamp NOT NULL DEFAULT (now()),
+  "updated_at" timestamp NOT NULL DEFAULT (now())
 );
 
 CREATE INDEX ON "orders" ("user_id");

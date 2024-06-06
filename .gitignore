@@ -6,6 +6,9 @@
 *.out
 UT-report.json
 
-# test coverage
+# Test coverage
 coverage.xml
 coverage.html
+
+# Others
+.DS_Store

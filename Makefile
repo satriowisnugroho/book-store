@@ -15,6 +15,9 @@ migrate-up:
 migrate-down:
 	migrate -path db/migration -database "postgresql://root:root@localhost:5433/book_store_development?sslmode=disable" -verbose down
 
+seed:
+	PGPASSWORD=root psql -U root -h localhost -p 5433 -t books -d book_store_development < db/seed.sql
+
 start:
 	go run app/api/main.go
 
