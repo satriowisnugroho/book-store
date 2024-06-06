@@ -1,4 +1,4 @@
-.PHONY: compose create-db drop-db migrate-up migrate-down
+.PHONY: compose create-db drop-db migrate-up migrate-down start
 
 compose:
 	docker-compose up
@@ -14,3 +14,6 @@ migrate-up:
 
 migrate-down:
 	migrate -path db/migration -database "postgresql://root:root@localhost:5433/book_store_development?sslmode=disable" -verbose down
+
+start:
+	go run app/api/main.go
