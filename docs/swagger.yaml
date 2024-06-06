@@ -1,0 +1,83 @@
+basePath: /v1
+definitions:
+  entity.Book:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      isbn:
+        type: string
+      price:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  response.ErrorBody:
+    properties:
+      errors:
+        items:
+          $ref: '#/definitions/response.ErrorInfo'
+        type: array
+      meta: {}
+    type: object
+  response.ErrorInfo:
+    properties:
+      code:
+        type: integer
+      field:
+        type: string
+      message:
+        type: string
+    type: object
+  response.MetaInfo:
+    properties:
+      http_status:
+        type: integer
+    type: object
+  response.SuccessBody:
+    properties:
+      data: {}
+      message:
+        type: string
+      meta: {}
+    type: object
+host: localhost:9999
+info:
+  contact: {}
+  description: An API Documentation
+  title: Book Store API
+  version: "1.0"
+paths:
+  /books:
+    get:
+      consumes:
+      - application/json
+      description: An API to show list of books
+      operationId: list
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessBody'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/entity.Book'
+                  type: array
+                meta:
+                  $ref: '#/definitions/response.MetaInfo'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      summary: Show Book List
+      tags:
+      - book
+swagger: "2.0"

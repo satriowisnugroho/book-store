@@ -1,4 +1,4 @@
-.PHONY: compose create-db drop-db migrate-up migrate-down start
+.PHONY: compose create-db drop-db migrate-up migrate-down start test
 
 compose:
 	docker-compose up
@@ -17,3 +17,16 @@ migrate-down:
 
 start:
 	go run app/api/main.go
+
+test:
+	go test -cover -coverprofile=coverage.out -json $$(go list ./... | grep -Ev "app") > ./UT-report.json
+
+test-cover:
+	make test
+	go tool cover -html=coverage.out
+
+mock-init:
+	mockery --all --dir ./ --output ./test/mock --case underscore
+
+swag-init-v1:
+	swag init --pd -g internal/handler/http/v1/router.go

@@ -1,0 +1,11 @@
+# Environment
+.env
+.vscode
+
+# Built / generated files
+*.out
+UT-report.json
+
+# test coverage
+coverage.xml
+coverage.html

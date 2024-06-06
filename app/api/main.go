@@ -47,7 +47,7 @@ func main() {
 	select {
 	case s := <-interrupt:
 		l.Info("app - api - signal: " + s.String())
-	case err := <-httpServer.Notify():
+	case err = <-httpServer.Notify():
 		l.Error(fmt.Errorf("app - api - httpServer.Notify: %w", err))
 	}
 

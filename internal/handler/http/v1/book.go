@@ -2,6 +2,7 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
+	_ "github.com/satriowisnugroho/book-store/internal/entity"
 	"github.com/satriowisnugroho/book-store/internal/response"
 	"github.com/satriowisnugroho/book-store/internal/usecase"
 	"github.com/satriowisnugroho/book-store/pkg/logger"
@@ -28,7 +29,6 @@ func newBookHandler(handler *gin.RouterGroup, l logger.LoggerInterface, bu useca
 // @Accept      json
 // @Produce     json
 // @Success     200 {object} response.SuccessBody{data=[]entity.Book,meta=response.MetaInfo}
-// @Failure     404 {object} response.ErrorBody
 // @Failure     500 {object} response.ErrorBody
 // @Router      /books [get]
 func (h *BookHandler) GetBooks(c *gin.Context) {
