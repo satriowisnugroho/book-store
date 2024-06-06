@@ -14,6 +14,36 @@ type OrderUsecaseInterface struct {
 	mock.Mock
 }
 
+// CreateOrder provides a mock function with given fields: ctx, payload
+func (_m *OrderUsecaseInterface) CreateOrder(ctx context.Context, payload *entity.OrderPayload) (*entity.Order, error) {
+	ret := _m.Called(ctx, payload)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateOrder")
+	}
+
+	var r0 *entity.Order
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, *entity.OrderPayload) (*entity.Order, error)); ok {
+		return rf(ctx, payload)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, *entity.OrderPayload) *entity.Order); ok {
+		r0 = rf(ctx, payload)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*entity.Order)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, *entity.OrderPayload) error); ok {
+		r1 = rf(ctx, payload)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetOrdersByUserID provides a mock function with given fields: ctx
 func (_m *OrderUsecaseInterface) GetOrdersByUserID(ctx context.Context) ([]*entity.Order, error) {
 	ret := _m.Called(ctx)

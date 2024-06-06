@@ -85,11 +85,15 @@ type MetaInfo struct {
 }
 
 const (
-	// ErrorCodeNotFound Error code for path not found
-	ErrorCodeNotFound = 10000
-
 	// ErrorCodeUnexpectedError Error code for unexpected error
 	ErrorCodeUnexpectedError = 9999
+
+	// ErrorCodeNotFound Error code for path not found
+	ErrorCodeNotFound = 10000
+	// ErrorCodeForbidden Error code for forbidden
+	ErrorCodeForbidden = 10001
+	// ErrorCodeInvalidQuantity Error code for invalid quantity
+	ErrorCodeInvalidQuantity = 10002
 )
 
 var (
@@ -104,6 +108,18 @@ var (
 		Message:  "Record not found",
 		Code:     ErrorCodeNotFound,
 		HTTPCode: http.StatusNotFound,
+	}
+	// ErrForbidden define error when forbidden
+	ErrForbidden = CustomError{
+		Message:  "Forbidden",
+		Code:     ErrorCodeForbidden,
+		HTTPCode: http.StatusForbidden,
+	}
+	// ErrInvalidQuantity define error when invalid quantity
+	ErrInvalidQuantity = CustomError{
+		Message:  "Invalid quantity. The quantity must greater than 0",
+		Code:     ErrorCodeInvalidQuantity,
+		HTTPCode: http.StatusUnprocessableEntity,
 	}
 )
 

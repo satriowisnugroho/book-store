@@ -13,6 +13,52 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+func TestCreateOrder(t *testing.T) {
+	testcases := []struct {
+		name      string
+		ctx       context.Context
+		payload   *entity.OrderPayload
+		rOrderErr error
+		wantErr   bool
+	}{
+		{
+			name:    "deadline context",
+			ctx:     fixture.CtxEnded(),
+			wantErr: true,
+		},
+		{
+			name:    "invalid payload",
+			ctx:     context.Background(),
+			payload: &entity.OrderPayload{Quantity: 0},
+			wantErr: true,
+		},
+		{
+			name:      "failed to create order",
+			ctx:       context.Background(),
+			payload:   &entity.OrderPayload{Quantity: 1},
+			rOrderErr: errors.New("error create order"),
+			wantErr:   true,
+		},
+		{
+			name:    "success",
+			ctx:     context.Background(),
+			payload: &entity.OrderPayload{Quantity: 1},
+			wantErr: false,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			orderRepo := &testmock.OrderRepositoryInterface{}
+			orderRepo.On("CreateOrder", mock.Anything, mock.Anything).Return(tc.rOrderErr)
+
+			uc := usecase.NewOrderUsecase(orderRepo)
+			_, err := uc.CreateOrder(tc.ctx, tc.payload)
+			assert.Equal(t, tc.wantErr, err != nil)
+		})
+	}
+}
+
 func TestGetOrdersByUserID(t *testing.T) {
 	testcases := []struct {
 		name                  string

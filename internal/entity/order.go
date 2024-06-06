@@ -2,6 +2,8 @@ package entity
 
 import (
 	"time"
+
+	"github.com/satriowisnugroho/book-store/internal/response"
 )
 
 // Order struct holds entity of order
@@ -15,4 +17,19 @@ type Order struct {
 	TotalPrice int       `json:"total_price"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
+}
+
+// OrderPayload holds order payload representative
+type OrderPayload struct {
+	BookID   int `json:"book_id"`
+	Quantity int `json:"quantity"`
+}
+
+// Validate is func to validate order payload
+func (p *OrderPayload) Validate() error {
+	if p.Quantity <= 0 {
+		return response.ErrInvalidQuantity
+	}
+
+	return nil
 }
