@@ -13,13 +13,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetBooks(t *testing.T) {
+func TestGetOrders(t *testing.T) {
 	testcases := []struct {
 		name      string
 		ctx       context.Context
 		fetchErr  error
 		fetchRows []string
-		expected  []*entity.Book
+		expected  []*entity.Order
 		wantErr   bool
 	}{
 		{
@@ -42,8 +42,8 @@ func TestGetBooks(t *testing.T) {
 		{
 			name:      "success",
 			ctx:       context.Background(),
-			fetchRows: postgres.BookColumns,
-			expected:  []*entity.Book{{}},
+			fetchRows: postgres.OrderColumns,
+			expected:  []*entity.Order{{}},
 			wantErr:   false,
 		},
 	}
@@ -56,17 +56,20 @@ func TestGetBooks(t *testing.T) {
 			}
 			defer db.Close()
 
-			expectedQuery := "SELECT .+ FROM .+"
+			expectQuery := "SELECT .+ FROM .+ WHERE user_id = .+"
 			if tc.fetchErr != nil {
-				mock.ExpectQuery(expectedQuery).WillReturnError(tc.fetchErr)
+				mock.ExpectQuery(expectQuery).WillReturnError(tc.fetchErr)
 			} else {
 				rows := sqlmock.NewRows(tc.fetchRows)
 				if tc.expected != nil {
 					rows = rows.AddRow(
 						tc.expected[0].ID,
-						tc.expected[0].Isbn,
-						tc.expected[0].Title,
+						tc.expected[0].UserID,
+						tc.expected[0].BookID,
+						tc.expected[0].Quantity,
 						tc.expected[0].Price,
+						tc.expected[0].Fee,
+						tc.expected[0].TotalPrice,
 						tc.expected[0].CreatedAt,
 						tc.expected[0].UpdatedAt,
 					)
@@ -74,12 +77,12 @@ func TestGetBooks(t *testing.T) {
 					rows = rows.AddRow(1)
 				}
 
-				mock.ExpectQuery(expectedQuery).WillReturnRows(rows)
+				mock.ExpectQuery(expectQuery).WillReturnRows(rows)
 			}
 
 			dbx := sqlx.NewDb(db, "mock")
-			repo := postgres.NewBookRepository(dbx)
-			result, err := repo.GetBooks(tc.ctx)
+			repo := postgres.NewOrderRepository(dbx)
+			result, err := repo.GetOrdersByUserID(tc.ctx, int64(1))
 			assert.Equal(t, tc.wantErr, err != nil, err)
 			if !tc.wantErr {
 				assert.EqualValues(t, tc.expected, result)
