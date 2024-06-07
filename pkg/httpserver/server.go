@@ -3,6 +3,7 @@ package httpserver
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 )
@@ -41,6 +42,7 @@ func New(handler http.Handler, opts ...Option) *Server {
 		opt(s)
 	}
 
+	fmt.Printf("book-store is available at %s\n", s.server.Addr)
 	s.start()
 
 	return s
