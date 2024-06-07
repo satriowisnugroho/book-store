@@ -36,6 +36,13 @@ definitions:
       user_id:
         type: integer
     type: object
+  entity.OrderPayload:
+    properties:
+      book_id:
+        type: integer
+      quantity:
+        type: integer
+    type: object
   response.ErrorBody:
     properties:
       errors:
@@ -128,6 +135,47 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorBody'
       summary: Show History Order
+      tags:
+      - order
+    post:
+      consumes:
+      - application/json
+      description: An API to create an order
+      operationId: create order
+      parameters:
+      - description: payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entity.OrderPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessBody'
+            - properties:
+                data:
+                  $ref: '#/definitions/entity.Order'
+                meta:
+                  $ref: '#/definitions/response.MetaInfo'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      summary: Create an Order
       tags:
       - order
 swagger: "2.0"
