@@ -5,9 +5,11 @@ import (
 	"fmt"
 
 	"github.com/pkg/errors"
+	"github.com/satriowisnugroho/book-store/internal/config"
 	"github.com/satriowisnugroho/book-store/internal/entity"
 	"github.com/satriowisnugroho/book-store/internal/helper"
 	repo "github.com/satriowisnugroho/book-store/internal/repository/postgres"
+	"github.com/satriowisnugroho/book-store/internal/response"
 )
 
 // OrderUsecaseInterface define contract for order related functions to usecase
@@ -17,12 +19,14 @@ type OrderUsecaseInterface interface {
 }
 
 type OrderUsecase struct {
-	repo repo.OrderRepositoryInterface
+	bookRepo  repo.BookRepositoryInterface
+	orderRepo repo.OrderRepositoryInterface
 }
 
-func NewOrderUsecase(r repo.OrderRepositoryInterface) *OrderUsecase {
+func NewOrderUsecase(br repo.BookRepositoryInterface, or repo.OrderRepositoryInterface) *OrderUsecase {
 	return &OrderUsecase{
-		repo: r,
+		bookRepo:  br,
+		orderRepo: or,
 	}
 }
 
@@ -37,17 +41,24 @@ func (uc *OrderUsecase) CreateOrder(ctx context.Context, payload *entity.OrderPa
 		return nil, err
 	}
 
-	// TODO: Get book by ID
+	book, err := uc.bookRepo.GetBookByID(ctx, payload.BookID)
+	if err != nil {
+		if err == response.ErrNotFound {
+			return nil, err
+		}
+
+		return nil, errors.Wrap(fmt.Errorf("uc.repo.GetBookByID: %w", err), functionName)
+	}
 
 	order := &entity.Order{}
+	// TODO: Get from current user
 	order.UserID = 1
-	order.BookID = payload.BookID
+	order.BookID = book.ID
 	order.Quantity = payload.Quantity
-	order.Price = 0
-	order.Fee = 0
-	order.TotalPrice = (payload.Quantity * 0) + 0
-
-	if err := uc.repo.CreateOrder(ctx, order); err != nil {
+	order.Price = book.Price
+	order.Fee = config.ServiceFee
+	order.TotalPrice = (payload.Quantity * book.Price) + config.ServiceFee
+	if err := uc.orderRepo.CreateOrder(ctx, order); err != nil {
 		return nil, errors.Wrap(fmt.Errorf("uc.repo.CreateOrder: %w", err), functionName)
 	}
 
@@ -63,7 +74,7 @@ func (uc *OrderUsecase) GetOrdersByUserID(ctx context.Context) ([]*entity.Order,
 
 	// TODO: Get from current user
 	userID := 1
-	orders, err := uc.repo.GetOrdersByUserID(ctx, userID)
+	orders, err := uc.orderRepo.GetOrdersByUserID(ctx, userID)
 	if err != nil {
 		return nil, errors.Wrap(fmt.Errorf("uc.repo.GetOrdersByUserID: %w", err), functionName)
 	}

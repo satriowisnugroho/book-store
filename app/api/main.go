@@ -35,7 +35,7 @@ func main() {
 
 	// Initialize usecases
 	bookUsecase := usecase.NewBookUsecase(bookRepo)
-	orderUsecase := usecase.NewOrderUsecase(orderRepo)
+	orderUsecase := usecase.NewOrderUsecase(bookRepo, orderRepo)
 
 	// HTTP Server
 	handler := gin.New()
