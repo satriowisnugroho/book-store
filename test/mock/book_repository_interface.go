@@ -14,6 +14,36 @@ type BookRepositoryInterface struct {
 	mock.Mock
 }
 
+// GetBookByID provides a mock function with given fields: ctx, bookID
+func (_m *BookRepositoryInterface) GetBookByID(ctx context.Context, bookID int) (*entity.Book, error) {
+	ret := _m.Called(ctx, bookID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetBookByID")
+	}
+
+	var r0 *entity.Book
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int) (*entity.Book, error)); ok {
+		return rf(ctx, bookID)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, int) *entity.Book); ok {
+		r0 = rf(ctx, bookID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*entity.Book)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
+		r1 = rf(ctx, bookID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetBooks provides a mock function with given fields: ctx
 func (_m *BookRepositoryInterface) GetBooks(ctx context.Context) ([]*entity.Book, error) {
 	ret := _m.Called(ctx)

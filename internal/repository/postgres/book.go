@@ -10,11 +10,13 @@ import (
 	"github.com/satriowisnugroho/book-store/internal/entity"
 	"github.com/satriowisnugroho/book-store/internal/helper"
 	dbentity "github.com/satriowisnugroho/book-store/internal/repository/postgres/entity"
+	"github.com/satriowisnugroho/book-store/internal/response"
 )
 
 // BookRepositoryInterface define contract for book related functions to repository
 type BookRepositoryInterface interface {
 	GetBooks(ctx context.Context) ([]*entity.Book, error)
+	GetBookByID(ctx context.Context, bookID int) (*entity.Book, error)
 }
 
 // BookRepository holds database connection
@@ -67,11 +69,31 @@ func (r *BookRepository) GetBooks(ctx context.Context) ([]*entity.Book, error) {
 	}
 
 	query := fmt.Sprintf("SELECT %s FROM %s", BookAttributes, BookTableName)
-
 	rows, err := r.fetch(ctx, query)
 	if err != nil {
 		return rows, errors.Wrap(err, functionName)
 	}
 
 	return rows, nil
+}
+
+// GetBookByID query to get book by ID
+func (r *BookRepository) GetBookByID(ctx context.Context, bookID int) (*entity.Book, error) {
+	functionName := "BookRepository.GetBookByID"
+
+	if err := helper.CheckDeadline(ctx); err != nil {
+		return nil, errors.Wrap(err, functionName)
+	}
+
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE id = $1 LIMIT 1", BookAttributes, BookTableName)
+	rows, err := r.fetch(ctx, query, bookID)
+	if err != nil {
+		return nil, errors.Wrap(err, functionName)
+	}
+
+	if len(rows) == 0 {
+		return nil, response.ErrNotFound
+	}
+
+	return rows[0], nil
 }
