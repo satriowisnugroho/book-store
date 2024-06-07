@@ -4,7 +4,6 @@
 
 # Built / generated files
 *.out
-UT-report.json
 
 # Test coverage
 coverage.xml

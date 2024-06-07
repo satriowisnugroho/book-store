@@ -25,7 +25,7 @@ start:
 	go run app/api/main.go
 
 test:
-	go test -cover -coverprofile=coverage.out -json $$(go list ./... | grep -Ev "app") > ./UT-report.json
+	go test -cover -coverprofile=coverage.out $$(go list ./... | grep -Ev "app")
 
 test-cover:
 	make test
