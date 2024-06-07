@@ -1,6 +1,5 @@
 CREATE TABLE "books" (
-  -- "id" bigint PRIMARY KEY AUTO_INCREMENT,
-  "id" bigint PRIMARY KEY,
+  "id" serial PRIMARY KEY,
   "isbn" varchar NOT NULL,
   "title" varchar NOT NULL,
   "price" integer NOT NULL,

@@ -1,6 +1,5 @@
 CREATE TABLE "orders" (
-  -- "id" bigint PRIMARY KEY AUTO_INCREMENT,
-  "id" bigint PRIMARY KEY,
+  "id" serial PRIMARY KEY,
   "user_id" bigint NOT NULL,
   "book_id" bigint NOT NULL,
   "quantity" integer NOT NULL,

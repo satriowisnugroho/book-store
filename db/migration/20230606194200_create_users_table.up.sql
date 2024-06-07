@@ -1,6 +1,5 @@
 CREATE TABLE "users" (
-  -- "id" bigint PRIMARY KEY AUTO_INCREMENT,
-  "id" bigint PRIMARY KEY,
+  "id" serial PRIMARY KEY,
   "email" varchar NOT NULL,
   "fullname" varchar NOT NULL,
   "crypted_password" varchar NOT NULL,
