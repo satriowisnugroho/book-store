@@ -6,5 +6,3 @@ CREATE TABLE "books" (
   "created_at" timestamp NOT NULL DEFAULT (now()),
   "updated_at" timestamp NOT NULL DEFAULT (now())
 );
-
-CREATE UNIQUE INDEX ON "books" ("isbn");
