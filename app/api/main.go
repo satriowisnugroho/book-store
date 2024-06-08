@@ -32,14 +32,16 @@ func main() {
 	// Initialize repositories
 	bookRepo := postgres.NewBookRepository(postgresDb.Db)
 	orderRepo := postgres.NewOrderRepository(postgresDb.Db)
+	userRepo := postgres.NewUserRepository(postgresDb.Db)
 
 	// Initialize usecases
 	bookUsecase := usecase.NewBookUsecase(bookRepo)
 	orderUsecase := usecase.NewOrderUsecase(bookRepo, orderRepo)
+	userUsecase := usecase.NewUserUsecase(userRepo)
 
 	// HTTP Server
 	handler := gin.New()
-	httpv1.NewRouter(handler, l, bookUsecase, orderUsecase)
+	httpv1.NewRouter(handler, l, bookUsecase, orderUsecase, userUsecase)
 	httpServer := httpserver.New(handler, httpserver.Port(fmt.Sprint(cfg.Port)))
 
 	// Waiting signal

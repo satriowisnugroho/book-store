@@ -30,9 +30,9 @@ func TestCreateOrder(t *testing.T) {
 			httpStatusCodeRes: http.StatusInternalServerError,
 		},
 		{
-			name:              "failed to create product",
+			name:              "failed to create order",
 			body:              `{}`,
-			uOrderErr:         errors.New("error create product"),
+			uOrderErr:         errors.New("error create order"),
 			httpStatusCodeRes: http.StatusInternalServerError,
 		},
 		{
@@ -57,10 +57,10 @@ func TestCreateOrder(t *testing.T) {
 			l := &testmock.LoggerInterface{}
 			l.On("Error", mock.Anything, mock.Anything)
 
-			productUsecase := &testmock.OrderUsecaseInterface{}
-			productUsecase.On("CreateOrder", mock.Anything, mock.Anything).Return(tc.uOrderRes, tc.uOrderErr)
+			orderUsecase := &testmock.OrderUsecaseInterface{}
+			orderUsecase.On("CreateOrder", mock.Anything, mock.Anything).Return(tc.uOrderRes, tc.uOrderErr)
 
-			h := &httpv1.OrderHandler{l, productUsecase}
+			h := &httpv1.OrderHandler{l, orderUsecase}
 			h.CreateOrder(ctx)
 
 			assert.Equal(t, tc.httpStatusCodeRes, w.Code)

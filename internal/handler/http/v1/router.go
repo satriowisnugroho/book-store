@@ -25,6 +25,7 @@ func NewRouter(
 	l logger.LoggerInterface,
 	bu usecase.BookUsecaseInterface,
 	ou usecase.OrderUsecaseInterface,
+	uu usecase.UserUsecaseInterface,
 ) {
 	// Options
 	handler.Use(gin.Logger())
@@ -42,5 +43,6 @@ func NewRouter(
 	{
 		newBookHandler(h, l, bu)
 		newOrderHandler(h, l, ou)
+		newUserHandler(h, l, uu)
 	}
 }
