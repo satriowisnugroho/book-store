@@ -78,3 +78,84 @@ func TestCreateUser(t *testing.T) {
 		})
 	}
 }
+
+func TestGetUserByEmail(t *testing.T) {
+	testcases := []struct {
+		name      string
+		ctx       context.Context
+		fetchErr  error
+		fetchRows []string
+		expected  *entity.User
+		wantErr   bool
+	}{
+		{
+			name:    "deadline context",
+			ctx:     fixture.CtxEnded(),
+			wantErr: true,
+		},
+		{
+			name:     "fail fetch query error",
+			ctx:      context.Background(),
+			fetchErr: errors.New("fail fetch"),
+			wantErr:  true,
+		},
+		{
+			name:      "fail fetch return error rows",
+			ctx:       context.Background(),
+			fetchRows: []string{"unknown_column"},
+			wantErr:   true,
+		},
+		{
+			name:      "record not found",
+			ctx:       context.Background(),
+			fetchRows: postgres.UserColumns,
+			wantErr:   true,
+		},
+		{
+			name:      "success",
+			ctx:       context.Background(),
+			fetchRows: postgres.UserColumns,
+			expected:  &entity.User{},
+			wantErr:   false,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			db, mock, err := sqlmock.New()
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			}
+			defer db.Close()
+
+			mockExpectedQuery := mock.ExpectQuery("^SELECT .+ FROM .+ WHERE email = .+ LIMIT 1")
+			if tc.fetchErr != nil {
+				mockExpectedQuery.WillReturnError(tc.fetchErr)
+			} else {
+				rows := sqlmock.NewRows(tc.fetchRows)
+				if tc.expected != nil {
+					rows = rows.AddRow(
+						tc.expected.ID,
+						tc.expected.Email,
+						tc.expected.Fullname,
+						tc.expected.CryptedPassword,
+						tc.expected.CreatedAt,
+						tc.expected.UpdatedAt,
+					)
+				} else if len(tc.fetchRows) == 1 {
+					rows = rows.AddRow(1)
+				}
+
+				mockExpectedQuery.WillReturnRows(rows)
+			}
+
+			dbx := sqlx.NewDb(db, "mock")
+			repo := postgres.NewUserRepository(dbx)
+			result, err := repo.GetUserByEmail(tc.ctx, "foo@bar.com")
+			assert.Equal(t, tc.wantErr, err != nil, err)
+			if !tc.wantErr {
+				assert.EqualValues(t, tc.expected, result)
+			}
+		})
+	}
+}

@@ -10,12 +10,14 @@ import (
 	"github.com/pkg/errors"
 	"github.com/satriowisnugroho/book-store/internal/entity"
 	"github.com/satriowisnugroho/book-store/internal/helper"
+	dbentity "github.com/satriowisnugroho/book-store/internal/repository/postgres/entity"
 	"github.com/satriowisnugroho/book-store/internal/response"
 )
 
 // UserRepositoryInterface define contract for user related functions to repository
 type UserRepositoryInterface interface {
 	CreateUser(ctx context.Context, user *entity.User) error
+	GetUserByEmail(ctx context.Context, email string) (*entity.User, error)
 }
 
 // UserRepository holds database connection
@@ -40,6 +42,28 @@ var (
 // NewUserRepository create initiate user repository with given database
 func NewUserRepository(db *sqlx.DB) *UserRepository {
 	return &UserRepository{db: db}
+}
+
+func (r *UserRepository) fetch(ctx context.Context, query string, args ...interface{}) ([]*entity.User, error) {
+	rows, err := r.db.QueryxContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	result := make([]*entity.User, 0)
+
+	for rows.Next() {
+		tmpEntity := dbentity.User{}
+		if err := rows.StructScan(&tmpEntity); err != nil {
+			return nil, errors.Wrap(err, "fetch")
+		}
+
+		result = append(result, tmpEntity.ToEntity())
+	}
+
+	return result, nil
 }
 
 // CreateUser insert user data into database
@@ -75,4 +99,25 @@ func (r *UserRepository) CreateUser(ctx context.Context, user *entity.User) erro
 	}
 
 	return nil
+}
+
+// GetUserByEmail query to get user by email
+func (r *UserRepository) GetUserByEmail(ctx context.Context, email string) (*entity.User, error) {
+	functionName := "UserRepository.GetUserByEmail"
+
+	if err := helper.CheckDeadline(ctx); err != nil {
+		return nil, errors.Wrap(err, functionName)
+	}
+
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE email = $1 LIMIT 1", UserAttributes, UserTableName)
+	rows, err := r.fetch(ctx, query, strings.ToLower(email))
+	if err != nil {
+		return nil, errors.Wrap(err, functionName)
+	}
+
+	if len(rows) == 0 {
+		return nil, response.ErrNotFound
+	}
+
+	return rows[0], nil
 }
