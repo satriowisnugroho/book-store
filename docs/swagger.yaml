@@ -43,6 +43,28 @@ definitions:
       quantity:
         type: integer
     type: object
+  entity.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      fullname:
+        type: string
+      id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  entity.UserPayload:
+    properties:
+      email:
+        type: string
+      fullname:
+        type: string
+      password:
+        type: string
+    type: object
   response.ErrorBody:
     properties:
       errors:
@@ -178,4 +200,42 @@ paths:
       summary: Create an Order
       tags:
       - order
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      description: An API to register an user
+      operationId: create user
+      parameters:
+      - description: payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entity.UserPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessBody'
+            - properties:
+                data:
+                  $ref: '#/definitions/entity.User'
+                meta:
+                  $ref: '#/definitions/response.MetaInfo'
+              type: object
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      summary: Register an User
+      tags:
+      - user
 swagger: "2.0"
