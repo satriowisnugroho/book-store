@@ -94,6 +94,8 @@ const (
 	ErrorCodeForbidden = 10001
 	// ErrorCodeInvalidQuantity Error code for invalid quantity
 	ErrorCodeInvalidQuantity = 10002
+	// ErrorCodeDuplicateEmail Error code for duplicate email
+	ErrorCodeDuplicateEmail = 10002
 )
 
 var (
@@ -118,6 +120,12 @@ var (
 	// ErrInvalidQuantity define error when invalid quantity
 	ErrInvalidQuantity = CustomError{
 		Message:  "Invalid quantity. The quantity must greater than 0",
+		Code:     ErrorCodeInvalidQuantity,
+		HTTPCode: http.StatusUnprocessableEntity,
+	}
+	// ErrDuplicateEmail define error when invalid quantity
+	ErrDuplicateEmail = CustomError{
+		Message:  "Email already in use",
 		Code:     ErrorCodeInvalidQuantity,
 		HTTPCode: http.StatusUnprocessableEntity,
 	}
