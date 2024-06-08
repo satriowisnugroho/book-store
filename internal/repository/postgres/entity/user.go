@@ -11,7 +11,7 @@ type User struct {
 	ID              int       `db:"id"`
 	Email           string    `db:"email"`
 	Fullname        string    `db:"fullname"`
-	CryptedPassword int       `db:"crypted_password"`
+	CryptedPassword string    `db:"crypted_password"`
 	CreatedAt       time.Time `db:"created_at"`
 	UpdatedAt       time.Time `db:"updated_at"`
 }
