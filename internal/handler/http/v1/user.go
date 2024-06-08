@@ -30,13 +30,13 @@ func newUserHandler(handler *gin.RouterGroup, l logger.LoggerInterface, uu useca
 // @Tags  	    user
 // @Accept      json
 // @Produce     json
-// @Param       request		body		entity.UserPayload		true		"payload"
+// @Param       request		body		entity.RegisterPayload		true		"payload"
 // @Success     200 {object} response.SuccessBody{data=entity.User,meta=response.MetaInfo}
 // @Failure     422 {object} response.ErrorBody
 // @Failure     500 {object} response.ErrorBody
 // @Router      /users/register [post]
 func (h *UserHandler) Register(c *gin.Context) {
-	var payload entity.UserPayload
+	var payload entity.RegisterPayload
 	if err := json.NewDecoder(c.Request.Body).Decode(&payload); err != nil {
 		h.Logger.Error(err, "http - v1 - Decode payload")
 		response.Error(c, err)

@@ -20,15 +20,15 @@ type User struct {
 	UpdatedAt       time.Time `json:"updated_at"`
 }
 
-// UserPayload holds order payload representative
-type UserPayload struct {
+// RegisterPayload holds register payload representative
+type RegisterPayload struct {
 	Email    string `json:"email"`
 	Fullname string `json:"fullname"`
 	Password string `json:"password"`
 }
 
-// Validate is func to validate order payload
-func (u *UserPayload) Validate() error {
+// Validate is func to validate register payload
+func (u *RegisterPayload) Validate() error {
 	if !emailRegex.MatchString(u.Email) {
 		return response.ErrInvalidEmail
 	}
@@ -42,4 +42,15 @@ func (u *UserPayload) Validate() error {
 	}
 
 	return nil
+}
+
+// LoginPayload holds login payload representative
+type LoginPayload struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+// LoginResponse holds login response
+type LoginResponse struct {
+	AccessToken string `json:"access_token"`
 }

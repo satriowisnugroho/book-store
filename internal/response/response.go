@@ -103,6 +103,8 @@ const (
 	ErrorCodeInvalidFullname = 10005
 	// ErrorCodeInvalidPasswordLength Error code for invalid password length
 	ErrorCodeInvalidPasswordLength = 10006
+	// ErrorCodeInvalidPassword Error code for invalid password
+	ErrorCodeInvalidPassword = 10007
 )
 
 var (
@@ -151,7 +153,13 @@ var (
 	// ErrInvalidPasswordLength define error when invalid password length
 	ErrInvalidPasswordLength = CustomError{
 		Message:  fmt.Sprintf("Password must be at least %d characters long", config.MinPasswordLen),
-		Code:     ErrorCodeInvalidFullname,
+		Code:     ErrorCodeInvalidPasswordLength,
+		HTTPCode: http.StatusUnprocessableEntity,
+	}
+	// ErrInvalidPassword define error when invalid password
+	ErrInvalidPassword = CustomError{
+		Message:  "Invalid password",
+		Code:     ErrorCodeInvalidPassword,
 		HTTPCode: http.StatusUnprocessableEntity,
 	}
 )

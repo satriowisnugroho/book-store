@@ -11,13 +11,14 @@ import (
 	testmock "github.com/satriowisnugroho/book-store/test/mock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func TestCreateUser(t *testing.T) {
 	testcases := []struct {
 		name     string
 		ctx      context.Context
-		payload  *entity.UserPayload
+		payload  *entity.RegisterPayload
 		rUserErr error
 		wantErr  bool
 	}{
@@ -29,20 +30,20 @@ func TestCreateUser(t *testing.T) {
 		{
 			name:    "invalid payload",
 			ctx:     context.Background(),
-			payload: &entity.UserPayload{Email: "foo"},
+			payload: &entity.RegisterPayload{Email: "foo"},
 			wantErr: true,
 		},
 		{
 			name:     "failed to create user",
 			ctx:      context.Background(),
-			payload:  &entity.UserPayload{Email: "foo@bar.com", Fullname: "Foo Bar", Password: "12345"},
+			payload:  &entity.RegisterPayload{Email: "foo@bar.com", Fullname: "Foo Bar", Password: "12345"},
 			rUserErr: errors.New("error create user"),
 			wantErr:  true,
 		},
 		{
 			name:    "success",
 			ctx:     context.Background(),
-			payload: &entity.UserPayload{Email: "foo@bar.com", Fullname: "Foo Bar", Password: "12345"},
+			payload: &entity.RegisterPayload{Email: "foo@bar.com", Fullname: "Foo Bar", Password: "12345"},
 			wantErr: false,
 		},
 	}
@@ -54,6 +55,52 @@ func TestCreateUser(t *testing.T) {
 
 			uc := usecase.NewUserUsecase(userRepo)
 			_, err := uc.CreateUser(tc.ctx, tc.payload)
+			assert.Equal(t, tc.wantErr, err != nil)
+		})
+	}
+}
+
+func TestLogin(t *testing.T) {
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("password123"), bcrypt.DefaultCost)
+
+	testcases := []struct {
+		name     string
+		ctx      context.Context
+		rUserRes *entity.User
+		rUserErr error
+		wantErr  bool
+	}{
+		{
+			name:    "deadline context",
+			ctx:     fixture.CtxEnded(),
+			wantErr: true,
+		},
+		{
+			name:     "failed to get user by email",
+			ctx:      context.Background(),
+			rUserErr: errors.New("error get user by email"),
+			wantErr:  true,
+		},
+		{
+			name: "success",
+			ctx:  context.Background(),
+			rUserRes: &entity.User{
+				ID:              123,
+				Email:           "foo@bar.com",
+				Fullname:        "Foo Bar",
+				CryptedPassword: string(hashedPassword),
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			userRepo := &testmock.UserRepositoryInterface{}
+			userRepo.On("GetUserByEmail", mock.Anything, mock.Anything).Return(tc.rUserRes, tc.rUserErr)
+
+			uc := usecase.NewUserUsecase(userRepo)
+			_, err := uc.Login(tc.ctx, &entity.LoginPayload{Password: "password123"})
 			assert.Equal(t, tc.wantErr, err != nil)
 		})
 	}
