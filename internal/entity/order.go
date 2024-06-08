@@ -26,8 +26,8 @@ type OrderPayload struct {
 }
 
 // Validate is func to validate order payload
-func (p *OrderPayload) Validate() error {
-	if p.Quantity <= 0 {
+func (o *OrderPayload) Validate() error {
+	if o.Quantity <= 0 {
 		return response.ErrInvalidQuantity
 	}
 

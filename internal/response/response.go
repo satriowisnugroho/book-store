@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
+	"github.com/satriowisnugroho/book-store/internal/config"
 )
 
 // SuccessBody holds data for success response
@@ -95,7 +96,13 @@ const (
 	// ErrorCodeInvalidQuantity Error code for invalid quantity
 	ErrorCodeInvalidQuantity = 10002
 	// ErrorCodeDuplicateEmail Error code for duplicate email
-	ErrorCodeDuplicateEmail = 10002
+	ErrorCodeDuplicateEmail = 10003
+	// ErrorCodeInvalidEmail Error code for invalid email
+	ErrorCodeInvalidEmail = 10004
+	// ErrorCodeInvalidFullname Error code for invalid fullname
+	ErrorCodeInvalidFullname = 10005
+	// ErrorCodeInvalidPasswordLength Error code for invalid password length
+	ErrorCodeInvalidPasswordLength = 10006
 )
 
 var (
@@ -123,10 +130,28 @@ var (
 		Code:     ErrorCodeInvalidQuantity,
 		HTTPCode: http.StatusUnprocessableEntity,
 	}
-	// ErrDuplicateEmail define error when invalid quantity
+	// ErrDuplicateEmail define error when email is duplicate
 	ErrDuplicateEmail = CustomError{
 		Message:  "Email already in use",
-		Code:     ErrorCodeInvalidQuantity,
+		Code:     ErrorCodeDuplicateEmail,
+		HTTPCode: http.StatusUnprocessableEntity,
+	}
+	// ErrInvalidEmail define error when invalid email
+	ErrInvalidEmail = CustomError{
+		Message:  "Invalid email format",
+		Code:     ErrorCodeInvalidEmail,
+		HTTPCode: http.StatusUnprocessableEntity,
+	}
+	// ErrInvalidFullname define error when invalid fullname
+	ErrInvalidFullname = CustomError{
+		Message:  "Invalid email format",
+		Code:     ErrorCodeInvalidFullname,
+		HTTPCode: http.StatusUnprocessableEntity,
+	}
+	// ErrInvalidPasswordLength define error when invalid password length
+	ErrInvalidPasswordLength = CustomError{
+		Message:  fmt.Sprintf("Password must be at least %d characters long", config.MinPasswordLen),
+		Code:     ErrorCodeInvalidFullname,
 		HTTPCode: http.StatusUnprocessableEntity,
 	}
 )
