@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 
 	"github.com/gin-gonic/gin"
+	"github.com/satriowisnugroho/book-store/internal/config"
 	"github.com/satriowisnugroho/book-store/internal/entity"
+	"github.com/satriowisnugroho/book-store/internal/handler/http/middleware"
 	"github.com/satriowisnugroho/book-store/internal/response"
 	"github.com/satriowisnugroho/book-store/internal/usecase"
 	"github.com/satriowisnugroho/book-store/pkg/logger"
@@ -15,10 +17,11 @@ type OrderHandler struct {
 	OrderUsecase usecase.OrderUsecaseInterface
 }
 
-func newOrderHandler(handler *gin.RouterGroup, l logger.LoggerInterface, bu usecase.OrderUsecaseInterface) {
+func newOrderHandler(handler *gin.RouterGroup, l logger.LoggerInterface, cfg *config.Config, bu usecase.OrderUsecaseInterface) {
 	r := &OrderHandler{l, bu}
 
 	h := handler.Group("/orders")
+	h.Use(middleware.AuthMiddleware(cfg.JWTSecret))
 	{
 		h.POST("/", r.CreateOrder)
 		h.GET("/", r.GetOrderHistory)
@@ -46,7 +49,7 @@ func (h *OrderHandler) CreateOrder(c *gin.Context) {
 		return
 	}
 
-	order, err := h.OrderUsecase.CreateOrder(c.Request.Context(), &payload)
+	order, err := h.OrderUsecase.CreateOrder(c, &payload)
 	if err != nil {
 		h.Logger.Error(err, "http - v1 - CreateOrder")
 		response.Error(c, err)
@@ -67,7 +70,7 @@ func (h *OrderHandler) CreateOrder(c *gin.Context) {
 // @Failure     500 {object} response.ErrorBody
 // @Router      /orders [get]
 func (h *OrderHandler) GetOrderHistory(c *gin.Context) {
-	orders, err := h.OrderUsecase.GetOrdersByUserID(c.Request.Context())
+	orders, err := h.OrderUsecase.GetOrdersByUserID(c)
 	if err != nil {
 		h.Logger.Error(err, "http - v1 - GetOrderHistory")
 		response.Error(c, err)

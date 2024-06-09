@@ -9,6 +9,7 @@ import (
 
 	// Swagger docs.
 	_ "github.com/satriowisnugroho/book-store/docs"
+	"github.com/satriowisnugroho/book-store/internal/config"
 	"github.com/satriowisnugroho/book-store/internal/usecase"
 	"github.com/satriowisnugroho/book-store/pkg/logger"
 )
@@ -23,6 +24,7 @@ import (
 func NewRouter(
 	handler *gin.Engine,
 	l logger.LoggerInterface,
+	cfg *config.Config,
 	bu usecase.BookUsecaseInterface,
 	ou usecase.OrderUsecaseInterface,
 	uu usecase.UserUsecaseInterface,
@@ -42,7 +44,7 @@ func NewRouter(
 	h := handler.Group("/v1")
 	{
 		newBookHandler(h, l, bu)
-		newOrderHandler(h, l, ou)
+		newOrderHandler(h, l, cfg, ou)
 		newUserHandler(h, l, uu)
 	}
 }
