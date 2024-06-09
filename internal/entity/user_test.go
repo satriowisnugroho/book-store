@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestValidate(t *testing.T) {
+func TestRegisterPayloadValidate(t *testing.T) {
 	testcases := []struct {
 		name    string
 		payload *entity.RegisterPayload
