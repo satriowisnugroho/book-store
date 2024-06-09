@@ -72,6 +72,8 @@ func (h *OrderHandler) CreateOrder(c *gin.Context) {
 // @Tags  	    Order
 // @Accept      json
 // @Produce     json
+// @Param       offset 			query 	integer 	false		"offset"
+// @Param       limit 			query 	integer 	false 	"limit"
 // @Success     200 {object} response.SuccessBody{data=[]entity.Order,meta=response.MetaInfo}
 // @Failure     401 {object} response.ErrorBody
 // @Failure     500 {object} response.ErrorBody

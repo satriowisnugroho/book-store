@@ -158,6 +158,15 @@ paths:
       - application/json
       description: An API to show history of orders
       operationId: order list
+      parameters:
+      - description: offset
+        in: query
+        name: offset
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:
