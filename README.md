@@ -26,4 +26,4 @@ Book Store is a service for online book store.
 ### ERD Diagram
 
 [DBDiagram](https://dbdiagram.io/d/Online-Book-Store-6661a65b9713410b05ed2fea)
-![ERD Diagram](images/ERD.png)
+<br><img src="images/ERD.png" alt="ERD Diagram" width="500">
