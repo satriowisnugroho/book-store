@@ -178,6 +178,68 @@ const docTemplate_swagger = `{
                 }
             }
         },
+        "/users/login": {
+            "post": {
+                "description": "An API to login",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Login",
+                "operationId": "login",
+                "parameters": [
+                    {
+                        "description": "payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.LoginPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessBody"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/entity.User"
+                                        },
+                                        "meta": {
+                                            "$ref": "#/definitions/response.MetaInfo"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            }
+        },
         "/users/register": {
             "post": {
                 "description": "An API to register an user",
@@ -199,7 +261,7 @@ const docTemplate_swagger = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entity.UserPayload"
+                            "$ref": "#/definitions/entity.RegisterPayload"
                         }
                     }
                 ],
@@ -265,6 +327,17 @@ const docTemplate_swagger = `{
                 }
             }
         },
+        "entity.LoginPayload": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
         "entity.Order": {
             "type": "object",
             "properties": {
@@ -308,6 +381,20 @@ const docTemplate_swagger = `{
                 }
             }
         },
+        "entity.RegisterPayload": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "fullname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
         "entity.User": {
             "type": "object",
             "properties": {
@@ -324,20 +411,6 @@ const docTemplate_swagger = `{
                     "type": "integer"
                 },
                 "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "entity.UserPayload": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "fullname": {
-                    "type": "string"
-                },
-                "password": {
                     "type": "string"
                 }
             }

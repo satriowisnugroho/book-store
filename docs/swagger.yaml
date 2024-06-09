@@ -15,6 +15,13 @@ definitions:
       updated_at:
         type: string
     type: object
+  entity.LoginPayload:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
   entity.Order:
     properties:
       book_id:
@@ -43,6 +50,15 @@ definitions:
       quantity:
         type: integer
     type: object
+  entity.RegisterPayload:
+    properties:
+      email:
+        type: string
+      fullname:
+        type: string
+      password:
+        type: string
+    type: object
   entity.User:
     properties:
       created_at:
@@ -54,15 +70,6 @@ definitions:
       id:
         type: integer
       updated_at:
-        type: string
-    type: object
-  entity.UserPayload:
-    properties:
-      email:
-        type: string
-      fullname:
-        type: string
-      password:
         type: string
     type: object
   response.ErrorBody:
@@ -200,6 +207,44 @@ paths:
       summary: Create an Order
       tags:
       - order
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: An API to login
+      operationId: login
+      parameters:
+      - description: payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entity.LoginPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessBody'
+            - properties:
+                data:
+                  $ref: '#/definitions/entity.User'
+                meta:
+                  $ref: '#/definitions/response.MetaInfo'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      summary: Login
+      tags:
+      - user
   /users/register:
     post:
       consumes:
@@ -212,7 +257,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/entity.UserPayload'
+          $ref: '#/definitions/entity.RegisterPayload'
       produces:
       - application/json
       responses:
