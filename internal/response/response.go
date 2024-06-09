@@ -93,18 +93,20 @@ const (
 	ErrorCodeNotFound = 10000
 	// ErrorCodeForbidden Error code for forbidden
 	ErrorCodeForbidden = 10001
+	// ErrorCodeUnauthorized Error code for unauthorized
+	ErrorCodeUnauthorized = 10002
 	// ErrorCodeInvalidQuantity Error code for invalid quantity
-	ErrorCodeInvalidQuantity = 10002
+	ErrorCodeInvalidQuantity = 10003
 	// ErrorCodeDuplicateEmail Error code for duplicate email
-	ErrorCodeDuplicateEmail = 10003
+	ErrorCodeDuplicateEmail = 10004
 	// ErrorCodeInvalidEmail Error code for invalid email
-	ErrorCodeInvalidEmail = 10004
+	ErrorCodeInvalidEmail = 10005
 	// ErrorCodeInvalidFullname Error code for invalid fullname
-	ErrorCodeInvalidFullname = 10005
+	ErrorCodeInvalidFullname = 10006
 	// ErrorCodeInvalidPasswordLength Error code for invalid password length
-	ErrorCodeInvalidPasswordLength = 10006
+	ErrorCodeInvalidPasswordLength = 10007
 	// ErrorCodeInvalidPassword Error code for invalid password
-	ErrorCodeInvalidPassword = 10007
+	ErrorCodeInvalidPassword = 10008
 )
 
 var (
@@ -163,6 +165,14 @@ var (
 		HTTPCode: http.StatusUnprocessableEntity,
 	}
 )
+
+func ErrUnauthorized(msg string) CustomError {
+	return CustomError{
+		Message:  fmt.Sprintf("Unauthorized. %s", msg),
+		Code:     ErrorCodeUnauthorized,
+		HTTPCode: http.StatusUnauthorized,
+	}
+}
 
 // BuildSuccess is a function to create SuccessBody
 func BuildSuccess(data interface{}, message string, meta interface{}) SuccessBody {
