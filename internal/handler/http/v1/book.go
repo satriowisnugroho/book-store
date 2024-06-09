@@ -29,6 +29,8 @@ func newBookHandler(handler *gin.RouterGroup, l logger.LoggerInterface, bu useca
 // @Tags  	    Book
 // @Accept      json
 // @Produce     json
+// @Param       offset 			query 	integer 	false		"offset"
+// @Param       limit 			query 	integer 	false 	"limit"
 // @Success     200 {object} response.SuccessBody{data=[]entity.Book,meta=response.MetaInfo}
 // @Failure     500 {object} response.ErrorBody
 // @Router      /books [get]

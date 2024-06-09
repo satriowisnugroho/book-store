@@ -30,6 +30,20 @@ const docTemplate_swagger = `{
                 ],
                 "summary": "Show List of Books",
                 "operationId": "book list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "offset",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -467,6 +481,15 @@ const docTemplate_swagger = `{
             "type": "object",
             "properties": {
                 "http_status": {
+                    "type": "integer"
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
+                },
+                "total": {
                     "type": "integer"
                 }
             }

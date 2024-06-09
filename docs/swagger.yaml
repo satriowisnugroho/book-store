@@ -93,6 +93,12 @@ definitions:
     properties:
       http_status:
         type: integer
+      limit:
+        type: integer
+      offset:
+        type: integer
+      total:
+        type: integer
     type: object
   response.SuccessBody:
     properties:
@@ -114,6 +120,15 @@ paths:
       - application/json
       description: An API to show list of books
       operationId: book list
+      parameters:
+      - description: offset
+        in: query
+        name: offset
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:
