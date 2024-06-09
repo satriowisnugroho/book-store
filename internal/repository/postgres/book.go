@@ -16,6 +16,7 @@ import (
 // BookRepositoryInterface define contract for book related functions to repository
 type BookRepositoryInterface interface {
 	GetBooks(ctx context.Context) ([]*entity.Book, error)
+	GetBooksCount(ctx context.Context) (int, error)
 	GetBookByID(ctx context.Context, bookID int) (*entity.Book, error)
 }
 
@@ -75,6 +76,24 @@ func (r *BookRepository) GetBooks(ctx context.Context) ([]*entity.Book, error) {
 	}
 
 	return rows, nil
+}
+
+// GetBooksCount query to get the count of books
+func (r *BookRepository) GetBooksCount(ctx context.Context) (int, error) {
+	functionName := "BookRepository.GetBooksCount"
+	if err := helper.CheckDeadline(ctx); err != nil {
+		return 0, errors.Wrap(err, functionName)
+	}
+
+	query := fmt.Sprintf("SELECT COUNT(*) FROM %s", BookTableName)
+
+	count := 0
+	rows := r.db.QueryRowxContext(ctx, query)
+	if err := rows.Scan(&count); err != nil {
+		return count, errors.Wrap(err, functionName)
+	}
+
+	return count, nil
 }
 
 // GetBookByID query to get book by ID

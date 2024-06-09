@@ -15,7 +15,7 @@ type BookUsecaseInterface struct {
 }
 
 // GetBooks provides a mock function with given fields: ctx
-func (_m *BookUsecaseInterface) GetBooks(ctx context.Context) ([]*entity.Book, error) {
+func (_m *BookUsecaseInterface) GetBooks(ctx context.Context) ([]*entity.Book, int, error) {
 	ret := _m.Called(ctx)
 
 	if len(ret) == 0 {
@@ -23,8 +23,9 @@ func (_m *BookUsecaseInterface) GetBooks(ctx context.Context) ([]*entity.Book, e
 	}
 
 	var r0 []*entity.Book
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context) ([]*entity.Book, error)); ok {
+	var r1 int
+	var r2 error
+	if rf, ok := ret.Get(0).(func(context.Context) ([]*entity.Book, int, error)); ok {
 		return rf(ctx)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context) []*entity.Book); ok {
@@ -35,13 +36,19 @@ func (_m *BookUsecaseInterface) GetBooks(ctx context.Context) ([]*entity.Book, e
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context) int); ok {
 		r1 = rf(ctx)
 	} else {
-		r1 = ret.Error(1)
+		r1 = ret.Get(1).(int)
 	}
 
-	return r0, r1
+	if rf, ok := ret.Get(2).(func(context.Context) error); ok {
+		r2 = rf(ctx)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
 }
 
 // NewBookUsecaseInterface creates a new instance of BookUsecaseInterface. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

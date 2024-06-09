@@ -12,7 +12,7 @@ import (
 
 // BookUsecaseInterface define contract for book related functions to usecase
 type BookUsecaseInterface interface {
-	GetBooks(ctx context.Context) ([]*entity.Book, error)
+	GetBooks(ctx context.Context) ([]*entity.Book, int, error)
 }
 
 type BookUsecase struct {
@@ -25,17 +25,22 @@ func NewBookUsecase(r repo.BookRepositoryInterface) *BookUsecase {
 	}
 }
 
-func (uc *BookUsecase) GetBooks(ctx context.Context) ([]*entity.Book, error) {
+func (uc *BookUsecase) GetBooks(ctx context.Context) ([]*entity.Book, int, error) {
 	functionName := "BookUsecase.GetBooks"
 
 	if err := helper.CheckDeadline(ctx); err != nil {
-		return nil, errors.Wrap(err, functionName)
+		return nil, 0, errors.Wrap(err, functionName)
 	}
 
 	books, err := uc.repo.GetBooks(ctx)
 	if err != nil {
-		return nil, errors.Wrap(fmt.Errorf("uc.repo.GetBooks: %w", err), functionName)
+		return nil, 0, errors.Wrap(fmt.Errorf("uc.repo.GetBooks: %w", err), functionName)
 	}
 
-	return books, nil
+	count, err := uc.repo.GetBooksCount(ctx)
+	if err != nil {
+		return nil, 0, errors.Wrap(fmt.Errorf("uc.repo.GetBooksCount: %w", err), functionName)
+	}
+
+	return books, count, nil
 }

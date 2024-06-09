@@ -45,7 +45,7 @@ func TestGetBooks(t *testing.T) {
 			bookRepo.On("GetBooks", mock.Anything).Return(tc.rGetBooksRes, tc.rGetBooksErr)
 
 			uc := usecase.NewBookUsecase(bookRepo)
-			_, err := uc.GetBooks(tc.ctx)
+			_, _, err := uc.GetBooks(tc.ctx)
 			assert.Equal(t, tc.wantErr, err != nil)
 		})
 	}

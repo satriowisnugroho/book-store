@@ -32,7 +32,7 @@ func newBookHandler(handler *gin.RouterGroup, l logger.LoggerInterface, bu useca
 // @Failure     500 {object} response.ErrorBody
 // @Router      /books [get]
 func (h *BookHandler) GetBooks(c *gin.Context) {
-	books, err := h.BookUsecase.GetBooks(c.Request.Context())
+	books, count, err := h.BookUsecase.GetBooks(c.Request.Context())
 	if err != nil {
 		h.Logger.Error(err, "http - v1 - book - GetBooks: GetBooks")
 		response.Error(c, err)
@@ -40,5 +40,5 @@ func (h *BookHandler) GetBooks(c *gin.Context) {
 		return
 	}
 
-	response.OK(c, books, "")
+	response.OKWithPagination(c, books, "", count, 0, 0)
 }
