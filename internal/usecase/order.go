@@ -15,7 +15,7 @@ import (
 // OrderUsecaseInterface define contract for order related functions to usecase
 type OrderUsecaseInterface interface {
 	CreateOrder(c *gin.Context, payload *entity.OrderPayload) (*entity.Order, error)
-	GetOrdersByUserID(c *gin.Context) ([]*entity.OrderResponse, error)
+	GetOrdersByUserID(c *gin.Context, limit, offset int) ([]*entity.OrderResponse, int, error)
 }
 
 type OrderUsecase struct {
@@ -65,28 +65,34 @@ func (uc *OrderUsecase) CreateOrder(c *gin.Context, payload *entity.OrderPayload
 	return order, nil
 }
 
-func (uc *OrderUsecase) GetOrdersByUserID(c *gin.Context) ([]*entity.OrderResponse, error) {
+func (uc *OrderUsecase) GetOrdersByUserID(c *gin.Context, limit, offset int) ([]*entity.OrderResponse, int, error) {
 	functionName := "OrderUsecase.GetOrdersByUserID"
 
 	ctx := c.Request.Context()
 	if err := helper.CheckDeadline(ctx); err != nil {
-		return nil, errors.Wrap(err, functionName)
+		return nil, 0, errors.Wrap(err, functionName)
 	}
 
-	orders, err := uc.orderRepo.GetOrdersByUserID(ctx, helper.GetUserIDFromContext(c))
+	userID := helper.GetUserIDFromContext(c)
+	orders, err := uc.orderRepo.GetOrdersByUserID(ctx, userID, limit, offset)
 	if err != nil {
-		return nil, errors.Wrap(fmt.Errorf("uc.repo.GetOrdersByUserID: %w", err), functionName)
+		return nil, 0, errors.Wrap(fmt.Errorf("uc.orderRepo.GetOrdersByUserID: %w", err), functionName)
+	}
+
+	count, err := uc.orderRepo.GetOrdersByUserIDCount(ctx, userID)
+	if err != nil {
+		return nil, 0, errors.Wrap(fmt.Errorf("uc.orderRepo.GetOrdersByUserIDCount: %w", err), functionName)
 	}
 
 	orderRes := []*entity.OrderResponse{}
 	for _, order := range orders {
 		book, err := uc.bookRepo.GetBookByID(ctx, order.BookID)
 		if err != nil {
-			return nil, errors.Wrap(fmt.Errorf("uc.repo.GetOrdersByUserID: %w", err), functionName)
+			return nil, 0, errors.Wrap(fmt.Errorf("uc.bookRepo.GetBookByID: %w", err), functionName)
 		}
 
 		orderRes = append(orderRes, &entity.OrderResponse{Order: order, Book: book})
 	}
 
-	return orderRes, nil
+	return orderRes, count, nil
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/satriowisnugroho/book-store/internal/config"
 	"github.com/satriowisnugroho/book-store/internal/entity"
 	"github.com/satriowisnugroho/book-store/internal/handler/http/middleware"
+	"github.com/satriowisnugroho/book-store/internal/helper"
 	"github.com/satriowisnugroho/book-store/internal/response"
 	"github.com/satriowisnugroho/book-store/internal/usecase"
 	"github.com/satriowisnugroho/book-store/pkg/logger"
@@ -77,7 +78,8 @@ func (h *OrderHandler) CreateOrder(c *gin.Context) {
 // @Security		BearerAuth
 // @Router      /orders [get]
 func (h *OrderHandler) GetOrderHistory(c *gin.Context) {
-	orders, err := h.OrderUsecase.GetOrdersByUserID(c)
+	limit, offset := helper.GetLimitOffsetFromURLQuery(c)
+	orders, count, err := h.OrderUsecase.GetOrdersByUserID(c, limit, offset)
 	if err != nil {
 		h.Logger.Error(err, "http - v1 - order - GetOrderHistory: GetOrderHistory")
 		response.Error(c, err)
@@ -85,5 +87,5 @@ func (h *OrderHandler) GetOrderHistory(c *gin.Context) {
 		return
 	}
 
-	response.OK(c, orders, "")
+	response.OKWithPagination(c, orders, "", count, offset, limit)
 }

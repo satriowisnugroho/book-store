@@ -44,34 +44,41 @@ func (_m *OrderUsecaseInterface) CreateOrder(c *gin.Context, payload *entity.Ord
 	return r0, r1
 }
 
-// GetOrdersByUserID provides a mock function with given fields: c
-func (_m *OrderUsecaseInterface) GetOrdersByUserID(c *gin.Context) ([]*entity.OrderResponse, error) {
-	ret := _m.Called(c)
+// GetOrdersByUserID provides a mock function with given fields: c, limit, offset
+func (_m *OrderUsecaseInterface) GetOrdersByUserID(c *gin.Context, limit int, offset int) ([]*entity.OrderResponse, int, error) {
+	ret := _m.Called(c, limit, offset)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetOrdersByUserID")
 	}
 
 	var r0 []*entity.OrderResponse
-	var r1 error
-	if rf, ok := ret.Get(0).(func(*gin.Context) ([]*entity.OrderResponse, error)); ok {
-		return rf(c)
+	var r1 int
+	var r2 error
+	if rf, ok := ret.Get(0).(func(*gin.Context, int, int) ([]*entity.OrderResponse, int, error)); ok {
+		return rf(c, limit, offset)
 	}
-	if rf, ok := ret.Get(0).(func(*gin.Context) []*entity.OrderResponse); ok {
-		r0 = rf(c)
+	if rf, ok := ret.Get(0).(func(*gin.Context, int, int) []*entity.OrderResponse); ok {
+		r0 = rf(c, limit, offset)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]*entity.OrderResponse)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*gin.Context) error); ok {
-		r1 = rf(c)
+	if rf, ok := ret.Get(1).(func(*gin.Context, int, int) int); ok {
+		r1 = rf(c, limit, offset)
 	} else {
-		r1 = ret.Error(1)
+		r1 = ret.Get(1).(int)
 	}
 
-	return r0, r1
+	if rf, ok := ret.Get(2).(func(*gin.Context, int, int) error); ok {
+		r2 = rf(c, limit, offset)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
 }
 
 // NewOrderUsecaseInterface creates a new instance of OrderUsecaseInterface. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

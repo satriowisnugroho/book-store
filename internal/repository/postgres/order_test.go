@@ -139,7 +139,7 @@ func TestGetOrders(t *testing.T) {
 
 			dbx := sqlx.NewDb(db, "mock")
 			repo := postgres.NewOrderRepository(dbx)
-			result, err := repo.GetOrdersByUserID(tc.ctx, 1)
+			result, err := repo.GetOrdersByUserID(tc.ctx, 1, 10, 0)
 			assert.Equal(t, tc.wantErr, err != nil, err)
 			if !tc.wantErr {
 				assert.EqualValues(t, tc.expected, result)

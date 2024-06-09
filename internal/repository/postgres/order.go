@@ -16,7 +16,7 @@ import (
 // OrderRepositoryInterface define contract for order related functions to repository
 type OrderRepositoryInterface interface {
 	CreateOrder(ctx context.Context, order *entity.Order) error
-	GetOrdersByUserID(ctx context.Context, userID int) ([]*entity.Order, error)
+	GetOrdersByUserID(ctx context.Context, userID, limit, offset int) ([]*entity.Order, error)
 	GetOrdersByUserIDCount(ctx context.Context, userID int) (int, error)
 }
 
@@ -98,14 +98,14 @@ func (r *OrderRepository) CreateOrder(ctx context.Context, order *entity.Order) 
 }
 
 // GetOrdersByUserID query to get list of orders by user ID
-func (r *OrderRepository) GetOrdersByUserID(ctx context.Context, userID int) ([]*entity.Order, error) {
+func (r *OrderRepository) GetOrdersByUserID(ctx context.Context, userID, limit, offset int) ([]*entity.Order, error) {
 	functionName := "OrderRepository.GetOrdersByUserID"
 
 	if err := helper.CheckDeadline(ctx); err != nil {
 		return []*entity.Order{}, errors.Wrap(err, functionName)
 	}
 
-	query := fmt.Sprintf("SELECT %s FROM %s WHERE user_id = %d", OrderAttributes, OrderTableName, userID)
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE user_id = %d LIMIT %d OFFSET %d", OrderAttributes, OrderTableName, userID, limit, offset)
 
 	rows, err := r.fetch(ctx, query)
 	if err != nil {
@@ -117,12 +117,12 @@ func (r *OrderRepository) GetOrdersByUserID(ctx context.Context, userID int) ([]
 
 // GetOrdersByUserIDCount query to get the count of orders by user ID
 func (r *OrderRepository) GetOrdersByUserIDCount(ctx context.Context, userID int) (int, error) {
-	functionName := "BookRepository.GetOrdersByUserIDCount"
+	functionName := "OrderRepository.GetOrdersByUserIDCount"
 	if err := helper.CheckDeadline(ctx); err != nil {
 		return 0, errors.Wrap(err, functionName)
 	}
 
-	query := fmt.Sprintf("SELECT COUNT(*) FROM %s WHERE user_id = %d", BookTableName, userID)
+	query := fmt.Sprintf("SELECT COUNT(*) FROM %s WHERE user_id = %d", OrderTableName, userID)
 
 	count := 0
 	rows := r.db.QueryRowxContext(ctx, query)

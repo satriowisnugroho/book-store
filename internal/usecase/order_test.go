@@ -83,13 +83,15 @@ func TestCreateOrder(t *testing.T) {
 
 func TestGetOrdersByUserID(t *testing.T) {
 	testcases := []struct {
-		name                  string
-		ctx                   *gin.Context
-		rGetOrdersByUserIDRes []*entity.Order
-		rGetOrdersByUserIDErr error
-		rGetBookByIDRes       *entity.Book
-		rGetBookByIDErr       error
-		wantErr               bool
+		name                       string
+		ctx                        *gin.Context
+		rGetOrdersByUserIDRes      []*entity.Order
+		rGetOrdersByUserIDErr      error
+		rGetOrdersByUserIDCountRes int
+		rGetOrdersByUserIDCountErr error
+		rGetBookByIDRes            *entity.Book
+		rGetBookByIDErr            error
+		wantErr                    bool
 	}{
 		{
 			name:    "deadline context",
@@ -123,10 +125,11 @@ func TestGetOrdersByUserID(t *testing.T) {
 			bookRepo.On("GetBookByID", mock.Anything, mock.Anything).Return(tc.rGetBookByIDRes, tc.rGetBookByIDErr)
 
 			orderRepo := &testmock.OrderRepositoryInterface{}
-			orderRepo.On("GetOrdersByUserID", mock.Anything, mock.Anything).Return(tc.rGetOrdersByUserIDRes, tc.rGetOrdersByUserIDErr)
+			orderRepo.On("GetOrdersByUserID", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(tc.rGetOrdersByUserIDRes, tc.rGetOrdersByUserIDErr)
+			orderRepo.On("GetOrdersByUserIDCount", mock.Anything, mock.Anything).Return(tc.rGetOrdersByUserIDCountRes, tc.rGetOrdersByUserIDCountErr)
 
 			uc := usecase.NewOrderUsecase(bookRepo, orderRepo)
-			_, err := uc.GetOrdersByUserID(tc.ctx)
+			_, _, err := uc.GetOrdersByUserID(tc.ctx, 10, 0)
 			assert.Equal(t, tc.wantErr, err != nil)
 		})
 	}

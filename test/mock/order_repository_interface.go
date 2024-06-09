@@ -32,9 +32,9 @@ func (_m *OrderRepositoryInterface) CreateOrder(ctx context.Context, order *enti
 	return r0
 }
 
-// GetOrdersByUserID provides a mock function with given fields: ctx, userID
-func (_m *OrderRepositoryInterface) GetOrdersByUserID(ctx context.Context, userID int) ([]*entity.Order, error) {
-	ret := _m.Called(ctx, userID)
+// GetOrdersByUserID provides a mock function with given fields: ctx, userID, limit, offset
+func (_m *OrderRepositoryInterface) GetOrdersByUserID(ctx context.Context, userID int, limit int, offset int) ([]*entity.Order, error) {
+	ret := _m.Called(ctx, userID, limit, offset)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetOrdersByUserID")
@@ -42,19 +42,19 @@ func (_m *OrderRepositoryInterface) GetOrdersByUserID(ctx context.Context, userI
 
 	var r0 []*entity.Order
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int) ([]*entity.Order, error)); ok {
-		return rf(ctx, userID)
+	if rf, ok := ret.Get(0).(func(context.Context, int, int, int) ([]*entity.Order, error)); ok {
+		return rf(ctx, userID, limit, offset)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int) []*entity.Order); ok {
-		r0 = rf(ctx, userID)
+	if rf, ok := ret.Get(0).(func(context.Context, int, int, int) []*entity.Order); ok {
+		r0 = rf(ctx, userID, limit, offset)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]*entity.Order)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
-		r1 = rf(ctx, userID)
+	if rf, ok := ret.Get(1).(func(context.Context, int, int, int) error); ok {
+		r1 = rf(ctx, userID, limit, offset)
 	} else {
 		r1 = ret.Error(1)
 	}
