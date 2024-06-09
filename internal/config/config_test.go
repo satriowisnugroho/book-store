@@ -8,12 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func getConfig() {
-	config.NewConfig()
-}
-
 func TestNewConfig(t *testing.T) {
-	assert.Panics(t, getConfig, "the config panics")
+	assert.Panics(t, func() { config.NewConfig() }, "the config panics")
 
 	setupEnv()
 	cfg := config.NewConfig()

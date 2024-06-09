@@ -273,7 +273,6 @@ func Error(c *gin.Context, err error) {
 	causer := errors.Cause(err)
 	customError := causer
 
-	var meta MetaInfo
 	errorResponse := BuildError(customError)
 
 	// case for error info with no http status
@@ -283,6 +282,6 @@ func Error(c *gin.Context, err error) {
 		}
 	}
 
-	meta = errorResponse.Meta.(MetaInfo)
+	meta := errorResponse.Meta.(MetaInfo)
 	c.AbortWithStatusJSON(meta.HTTPStatus, errorResponse)
 }
