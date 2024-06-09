@@ -3,9 +3,9 @@
 package mocks
 
 import (
-	context "context"
-
+	gin "github.com/gin-gonic/gin"
 	entity "github.com/satriowisnugroho/book-store/internal/entity"
+
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -14,9 +14,9 @@ type OrderUsecaseInterface struct {
 	mock.Mock
 }
 
-// CreateOrder provides a mock function with given fields: ctx, payload
-func (_m *OrderUsecaseInterface) CreateOrder(ctx context.Context, payload *entity.OrderPayload) (*entity.Order, error) {
-	ret := _m.Called(ctx, payload)
+// CreateOrder provides a mock function with given fields: c, payload
+func (_m *OrderUsecaseInterface) CreateOrder(c *gin.Context, payload *entity.OrderPayload) (*entity.Order, error) {
+	ret := _m.Called(c, payload)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateOrder")
@@ -24,19 +24,19 @@ func (_m *OrderUsecaseInterface) CreateOrder(ctx context.Context, payload *entit
 
 	var r0 *entity.Order
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *entity.OrderPayload) (*entity.Order, error)); ok {
-		return rf(ctx, payload)
+	if rf, ok := ret.Get(0).(func(*gin.Context, *entity.OrderPayload) (*entity.Order, error)); ok {
+		return rf(c, payload)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *entity.OrderPayload) *entity.Order); ok {
-		r0 = rf(ctx, payload)
+	if rf, ok := ret.Get(0).(func(*gin.Context, *entity.OrderPayload) *entity.Order); ok {
+		r0 = rf(c, payload)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*entity.Order)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *entity.OrderPayload) error); ok {
-		r1 = rf(ctx, payload)
+	if rf, ok := ret.Get(1).(func(*gin.Context, *entity.OrderPayload) error); ok {
+		r1 = rf(c, payload)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -44,9 +44,9 @@ func (_m *OrderUsecaseInterface) CreateOrder(ctx context.Context, payload *entit
 	return r0, r1
 }
 
-// GetOrdersByUserID provides a mock function with given fields: ctx
-func (_m *OrderUsecaseInterface) GetOrdersByUserID(ctx context.Context) ([]*entity.Order, error) {
-	ret := _m.Called(ctx)
+// GetOrdersByUserID provides a mock function with given fields: c
+func (_m *OrderUsecaseInterface) GetOrdersByUserID(c *gin.Context) ([]*entity.Order, error) {
+	ret := _m.Called(c)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetOrdersByUserID")
@@ -54,19 +54,19 @@ func (_m *OrderUsecaseInterface) GetOrdersByUserID(ctx context.Context) ([]*enti
 
 	var r0 []*entity.Order
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context) ([]*entity.Order, error)); ok {
-		return rf(ctx)
+	if rf, ok := ret.Get(0).(func(*gin.Context) ([]*entity.Order, error)); ok {
+		return rf(c)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context) []*entity.Order); ok {
-		r0 = rf(ctx)
+	if rf, ok := ret.Get(0).(func(*gin.Context) []*entity.Order); ok {
+		r0 = rf(c)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]*entity.Order)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
-		r1 = rf(ctx)
+	if rf, ok := ret.Get(1).(func(*gin.Context) error); ok {
+		r1 = rf(c)
 	} else {
 		r1 = ret.Error(1)
 	}

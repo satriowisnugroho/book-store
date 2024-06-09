@@ -1,10 +1,10 @@
 package usecase_test
 
 import (
-	"context"
 	"errors"
 	"testing"
 
+	"github.com/gin-gonic/gin"
 	"github.com/satriowisnugroho/book-store/internal/entity"
 	"github.com/satriowisnugroho/book-store/internal/response"
 	"github.com/satriowisnugroho/book-store/internal/usecase"
@@ -17,7 +17,7 @@ import (
 func TestCreateOrder(t *testing.T) {
 	testcases := []struct {
 		name      string
-		ctx       context.Context
+		ctx       *gin.Context
 		payload   *entity.OrderPayload
 		rBookRes  *entity.Book
 		rBookErr  error
@@ -26,32 +26,32 @@ func TestCreateOrder(t *testing.T) {
 	}{
 		{
 			name:    "deadline context",
-			ctx:     fixture.CtxEnded(),
+			ctx:     fixture.GinCtxEnded(),
 			wantErr: true,
 		},
 		{
 			name:    "invalid payload",
-			ctx:     context.Background(),
+			ctx:     fixture.GinCtxBackground(),
 			payload: &entity.OrderPayload{Quantity: 0},
 			wantErr: true,
 		},
 		{
 			name:     "book is not found",
-			ctx:      context.Background(),
+			ctx:      fixture.GinCtxBackground(),
 			payload:  &entity.OrderPayload{Quantity: 1},
 			rBookErr: response.ErrNotFound,
 			wantErr:  true,
 		},
 		{
 			name:     "failed to get book",
-			ctx:      context.Background(),
+			ctx:      fixture.GinCtxBackground(),
 			payload:  &entity.OrderPayload{Quantity: 1},
 			rBookErr: errors.New("error get book"),
 			wantErr:  true,
 		},
 		{
 			name:      "failed to create order",
-			ctx:       context.Background(),
+			ctx:       fixture.GinCtxBackground(),
 			payload:   &entity.OrderPayload{Quantity: 1},
 			rOrderErr: errors.New("error create order"),
 			rBookRes:  &entity.Book{},
@@ -59,7 +59,7 @@ func TestCreateOrder(t *testing.T) {
 		},
 		{
 			name:     "success",
-			ctx:      context.Background(),
+			ctx:      fixture.GinCtxBackground(),
 			payload:  &entity.OrderPayload{Quantity: 1},
 			rBookRes: &entity.Book{},
 			wantErr:  false,
@@ -84,25 +84,25 @@ func TestCreateOrder(t *testing.T) {
 func TestGetOrdersByUserID(t *testing.T) {
 	testcases := []struct {
 		name                  string
-		ctx                   context.Context
+		ctx                   *gin.Context
 		rGetOrdersByUserIDRes []*entity.Order
 		rGetOrdersByUserIDErr error
 		wantErr               bool
 	}{
 		{
 			name:    "deadline context",
-			ctx:     fixture.CtxEnded(),
+			ctx:     fixture.GinCtxEnded(),
 			wantErr: true,
 		},
 		{
 			name:                  "failed to get orders",
-			ctx:                   context.Background(),
+			ctx:                   fixture.GinCtxBackground(),
 			rGetOrdersByUserIDErr: errors.New("error get orders by user id"),
 			wantErr:               true,
 		},
 		{
 			name:    "success",
-			ctx:     context.Background(),
+			ctx:     fixture.GinCtxBackground(),
 			wantErr: false,
 		},
 	}
