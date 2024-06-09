@@ -70,7 +70,7 @@ func TestCreateOrder(t *testing.T) {
 	}
 }
 
-func TestGetOrders(t *testing.T) {
+func TestGetOrdersByUserID(t *testing.T) {
 	testcases := []struct {
 		name      string
 		ctx       context.Context
@@ -140,6 +140,62 @@ func TestGetOrders(t *testing.T) {
 			dbx := sqlx.NewDb(db, "mock")
 			repo := postgres.NewOrderRepository(dbx)
 			result, err := repo.GetOrdersByUserID(tc.ctx, 1, 10, 0)
+			assert.Equal(t, tc.wantErr, err != nil, err)
+			if !tc.wantErr {
+				assert.EqualValues(t, tc.expected, result)
+			}
+		})
+	}
+}
+
+func TestGetOrdersByUserIDCount(t *testing.T) {
+	testcases := []struct {
+		name     string
+		ctx      context.Context
+		fetchErr error
+		expected int
+		wantErr  bool
+	}{
+		{
+			name:    "deadline context",
+			ctx:     fixture.CtxEnded(),
+			wantErr: true,
+		},
+		{
+			name:     "fail fetch query error",
+			ctx:      context.Background(),
+			fetchErr: errors.New("fail fetch"),
+			wantErr:  true,
+		},
+		{
+			name:     "success",
+			ctx:      context.Background(),
+			expected: 1,
+			wantErr:  false,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			db, mock, err := sqlmock.New()
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			}
+			defer db.Close()
+
+			mockExpectedQuery := mock.ExpectQuery("SELECT COUNT\\(\\*\\) FROM .+ WHERE user_id = .+")
+			if tc.fetchErr != nil {
+				mockExpectedQuery.WillReturnError(tc.fetchErr)
+			} else {
+				rows := sqlmock.NewRows([]string{"COUNT(*)"})
+				rows = rows.AddRow(tc.expected)
+
+				mockExpectedQuery.WillReturnRows(rows)
+			}
+
+			dbx := sqlx.NewDb(db, "mock")
+			repo := postgres.NewOrderRepository(dbx)
+			result, err := repo.GetOrdersByUserIDCount(tc.ctx, 1)
 			assert.Equal(t, tc.wantErr, err != nil, err)
 			if !tc.wantErr {
 				assert.EqualValues(t, tc.expected, result)

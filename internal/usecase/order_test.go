@@ -105,6 +105,12 @@ func TestGetOrdersByUserID(t *testing.T) {
 			wantErr:               true,
 		},
 		{
+			name:                       "failed to get orders count",
+			ctx:                        fixture.GinCtxBackground(),
+			rGetOrdersByUserIDCountErr: errors.New("error get orders by user id count"),
+			wantErr:                    true,
+		},
+		{
 			name:                  "failed to get book",
 			ctx:                   fixture.GinCtxBackground(),
 			rGetOrdersByUserIDRes: []*entity.Order{{}},
