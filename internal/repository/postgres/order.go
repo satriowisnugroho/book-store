@@ -17,6 +17,7 @@ import (
 type OrderRepositoryInterface interface {
 	CreateOrder(ctx context.Context, order *entity.Order) error
 	GetOrdersByUserID(ctx context.Context, userID int) ([]*entity.Order, error)
+	GetOrdersByUserIDCount(ctx context.Context, userID int) (int, error)
 }
 
 // OrderRepository holds database connection
@@ -96,7 +97,7 @@ func (r *OrderRepository) CreateOrder(ctx context.Context, order *entity.Order) 
 	return nil
 }
 
-// GetOrders query to get list of orders by user ID
+// GetOrdersByUserID query to get list of orders by user ID
 func (r *OrderRepository) GetOrdersByUserID(ctx context.Context, userID int) ([]*entity.Order, error) {
 	functionName := "OrderRepository.GetOrdersByUserID"
 
@@ -112,4 +113,22 @@ func (r *OrderRepository) GetOrdersByUserID(ctx context.Context, userID int) ([]
 	}
 
 	return rows, nil
+}
+
+// GetOrdersByUserIDCount query to get the count of orders by user ID
+func (r *OrderRepository) GetOrdersByUserIDCount(ctx context.Context, userID int) (int, error) {
+	functionName := "BookRepository.GetOrdersByUserIDCount"
+	if err := helper.CheckDeadline(ctx); err != nil {
+		return 0, errors.Wrap(err, functionName)
+	}
+
+	query := fmt.Sprintf("SELECT COUNT(*) FROM %s WHERE user_id = %d", BookTableName, userID)
+
+	count := 0
+	rows := r.db.QueryRowxContext(ctx, query)
+	if err := rows.Scan(&count); err != nil {
+		return count, errors.Wrap(err, functionName)
+	}
+
+	return count, nil
 }
