@@ -22,7 +22,7 @@ func newBookHandler(handler *gin.RouterGroup, l logger.LoggerInterface, bu useca
 	}
 }
 
-// @Summary     Show Book List
+// @Summary     Show List of Books
 // @Description An API to show list of books
 // @ID          book list
 // @Tags  	    Book

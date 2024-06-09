@@ -65,7 +65,7 @@ func (h *OrderHandler) CreateOrder(c *gin.Context) {
 	response.OK(c, order, "Successfully create an order")
 }
 
-// @Summary     Show History Order
+// @Summary     Show History of Orders
 // @Description An API to show history of orders
 // @ID          order list
 // @Tags  	    Order

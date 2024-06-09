@@ -28,7 +28,7 @@ const docTemplate_swagger = `{
                 "tags": [
                     "Book"
                 ],
-                "summary": "Show Book List",
+                "summary": "Show List of Books",
                 "operationId": "book list",
                 "responses": {
                     "200": {
@@ -81,7 +81,7 @@ const docTemplate_swagger = `{
                 "tags": [
                     "Order"
                 ],
-                "summary": "Show History Order",
+                "summary": "Show History of Orders",
                 "operationId": "order list",
                 "responses": {
                     "200": {
