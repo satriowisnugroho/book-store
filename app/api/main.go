@@ -37,11 +37,11 @@ func main() {
 	// Initialize usecases
 	bookUsecase := usecase.NewBookUsecase(bookRepo)
 	orderUsecase := usecase.NewOrderUsecase(bookRepo, orderRepo)
-	userUsecase := usecase.NewUserUsecase(userRepo)
+	userUsecase := usecase.NewUserUsecase(cfg.JWTSecret, userRepo)
 
 	// HTTP Server
 	handler := gin.New()
-	httpv1.NewRouter(handler, l, bookUsecase, orderUsecase, userUsecase)
+	httpv1.NewRouter(handler, l, cfg, bookUsecase, orderUsecase, userUsecase)
 	httpServer := httpserver.New(handler, httpserver.Port(fmt.Sprint(cfg.Port)))
 
 	// Waiting signal

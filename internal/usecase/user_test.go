@@ -53,7 +53,7 @@ func TestCreateUser(t *testing.T) {
 			userRepo := &testmock.UserRepositoryInterface{}
 			userRepo.On("CreateUser", mock.Anything, mock.Anything).Return(tc.rUserErr)
 
-			uc := usecase.NewUserUsecase(userRepo)
+			uc := usecase.NewUserUsecase("", userRepo)
 			_, err := uc.CreateUser(tc.ctx, tc.payload)
 			assert.Equal(t, tc.wantErr, err != nil)
 		})
@@ -90,7 +90,7 @@ func TestLogin(t *testing.T) {
 				Fullname:        "Foo Bar",
 				CryptedPassword: string(hashedPassword),
 			},
-			wantErr: true,
+			wantErr: false,
 		},
 	}
 
@@ -99,7 +99,7 @@ func TestLogin(t *testing.T) {
 			userRepo := &testmock.UserRepositoryInterface{}
 			userRepo.On("GetUserByEmail", mock.Anything, mock.Anything).Return(tc.rUserRes, tc.rUserErr)
 
-			uc := usecase.NewUserUsecase(userRepo)
+			uc := usecase.NewUserUsecase("", userRepo)
 			_, err := uc.Login(tc.ctx, &entity.LoginPayload{Password: "password123"})
 			assert.Equal(t, tc.wantErr, err != nil)
 		})

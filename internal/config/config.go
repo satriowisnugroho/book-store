@@ -7,8 +7,8 @@ import (
 
 type Config struct {
 	Port           uint16 `env:"PORT,default=9999"`
-	Env            string `env:"ENV"`
 	LogLevel       string `env:"LOG_LEVEL,default=debug"`
+	JWTSecret      string `env:"JWT_SECRET,default=secret"`
 	DatabaseConfig DatabaseConfig
 }
 

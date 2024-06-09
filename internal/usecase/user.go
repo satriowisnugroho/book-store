@@ -21,12 +21,14 @@ type UserUsecaseInterface interface {
 }
 
 type UserUsecase struct {
-	userRepo repo.UserRepositoryInterface
+	jwtSecret string
+	userRepo  repo.UserRepositoryInterface
 }
 
-func NewUserUsecase(ur repo.UserRepositoryInterface) *UserUsecase {
+func NewUserUsecase(js string, ur repo.UserRepositoryInterface) *UserUsecase {
 	return &UserUsecase{
-		userRepo: ur,
+		jwtSecret: js,
+		userRepo:  ur,
 	}
 }
 
@@ -83,7 +85,7 @@ func (uc *UserUsecase) Login(ctx context.Context, payload *entity.LoginPayload) 
 		"exp":      time.Now().Add(24 * time.Hour).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenStr, _ := token.SignedString([]byte("secret"))
+	tokenStr, _ := token.SignedString([]byte(uc.jwtSecret))
 
 	resp := &entity.LoginResponse{
 		AccessToken: tokenStr,
