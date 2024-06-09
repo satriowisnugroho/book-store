@@ -42,7 +42,7 @@ func TestGetBooks(t *testing.T) {
 			l.On("Error", mock.Anything, mock.Anything)
 
 			bookUsecase := &testmock.BookUsecaseInterface{}
-			bookUsecase.On("GetBooks", mock.Anything).Return([]*entity.Book{{}}, tc.uBookErr)
+			bookUsecase.On("GetBooks", mock.Anything, mock.Anything).Return([]*entity.Book{{}}, 10, tc.uBookErr)
 
 			h := &httpv1.BookHandler{l, bookUsecase}
 			h.GetBooks(ctx)

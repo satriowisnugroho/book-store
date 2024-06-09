@@ -2,7 +2,8 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
-	_ "github.com/satriowisnugroho/book-store/internal/entity"
+	"github.com/satriowisnugroho/book-store/internal/entity"
+	"github.com/satriowisnugroho/book-store/internal/helper"
 	"github.com/satriowisnugroho/book-store/internal/response"
 	"github.com/satriowisnugroho/book-store/internal/usecase"
 	"github.com/satriowisnugroho/book-store/pkg/logger"
@@ -32,7 +33,12 @@ func newBookHandler(handler *gin.RouterGroup, l logger.LoggerInterface, bu useca
 // @Failure     500 {object} response.ErrorBody
 // @Router      /books [get]
 func (h *BookHandler) GetBooks(c *gin.Context) {
-	books, count, err := h.BookUsecase.GetBooks(c.Request.Context())
+	limit, offset := helper.GetLimitOffsetFromURLQuery(c)
+	payload := entity.GetBooksPayload{
+		Offset: offset,
+		Limit:  limit,
+	}
+	books, count, err := h.BookUsecase.GetBooks(c.Request.Context(), payload)
 	if err != nil {
 		h.Logger.Error(err, "http - v1 - book - GetBooks: GetBooks")
 		response.Error(c, err)

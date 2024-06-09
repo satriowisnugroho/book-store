@@ -79,7 +79,7 @@ func TestGetBooks(t *testing.T) {
 
 			dbx := sqlx.NewDb(db, "mock")
 			repo := postgres.NewBookRepository(dbx)
-			result, err := repo.GetBooks(tc.ctx)
+			result, err := repo.GetBooks(tc.ctx, entity.GetBooksPayload{})
 			assert.Equal(t, tc.wantErr, err != nil, err)
 			if !tc.wantErr {
 				assert.EqualValues(t, tc.expected, result)

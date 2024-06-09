@@ -15,11 +15,13 @@ import (
 
 func TestGetBooks(t *testing.T) {
 	testcases := []struct {
-		name         string
-		ctx          context.Context
-		rGetBooksRes []*entity.Book
-		rGetBooksErr error
-		wantErr      bool
+		name              string
+		ctx               context.Context
+		rGetBooksRes      []*entity.Book
+		rGetBooksErr      error
+		rGetBooksCountRes int
+		rGetBooksCountErr error
+		wantErr           bool
 	}{
 		{
 			name:    "deadline context",
@@ -33,6 +35,12 @@ func TestGetBooks(t *testing.T) {
 			wantErr:      true,
 		},
 		{
+			name:              "failed to get books count",
+			ctx:               context.Background(),
+			rGetBooksCountErr: errors.New("error get books count"),
+			wantErr:           true,
+		},
+		{
 			name:    "success",
 			ctx:     context.Background(),
 			wantErr: false,
@@ -42,10 +50,11 @@ func TestGetBooks(t *testing.T) {
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
 			bookRepo := &testmock.BookRepositoryInterface{}
-			bookRepo.On("GetBooks", mock.Anything).Return(tc.rGetBooksRes, tc.rGetBooksErr)
+			bookRepo.On("GetBooks", mock.Anything, mock.Anything).Return(tc.rGetBooksRes, tc.rGetBooksErr)
+			bookRepo.On("GetBooksCount", mock.Anything).Return(tc.rGetBooksCountRes, tc.rGetBooksCountErr)
 
 			uc := usecase.NewBookUsecase(bookRepo)
-			_, _, err := uc.GetBooks(tc.ctx)
+			_, _, err := uc.GetBooks(tc.ctx, entity.GetBooksPayload{})
 			assert.Equal(t, tc.wantErr, err != nil)
 		})
 	}

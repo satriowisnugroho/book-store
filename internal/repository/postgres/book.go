@@ -15,7 +15,7 @@ import (
 
 // BookRepositoryInterface define contract for book related functions to repository
 type BookRepositoryInterface interface {
-	GetBooks(ctx context.Context) ([]*entity.Book, error)
+	GetBooks(ctx context.Context, payload entity.GetBooksPayload) ([]*entity.Book, error)
 	GetBooksCount(ctx context.Context) (int, error)
 	GetBookByID(ctx context.Context, bookID int) (*entity.Book, error)
 }
@@ -62,14 +62,14 @@ func (r *BookRepository) fetch(ctx context.Context, query string, args ...interf
 }
 
 // GetBooks query to get list of books
-func (r *BookRepository) GetBooks(ctx context.Context) ([]*entity.Book, error) {
+func (r *BookRepository) GetBooks(ctx context.Context, payload entity.GetBooksPayload) ([]*entity.Book, error) {
 	functionName := "BookRepository.GetBooks"
 
 	if err := helper.CheckDeadline(ctx); err != nil {
 		return []*entity.Book{}, errors.Wrap(err, functionName)
 	}
 
-	query := fmt.Sprintf("SELECT %s FROM %s", BookAttributes, BookTableName)
+	query := fmt.Sprintf("SELECT %s FROM %s OFFSET %d LIMIT %d", BookAttributes, BookTableName, payload.Offset, payload.Limit)
 	rows, err := r.fetch(ctx, query)
 	if err != nil {
 		return rows, errors.Wrap(err, functionName)

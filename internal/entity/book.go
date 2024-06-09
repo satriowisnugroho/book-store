@@ -13,3 +13,9 @@ type Book struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
+
+// GetBooksPayload holds login payload representative
+type GetBooksPayload struct {
+	Offset int
+	Limit  int
+}

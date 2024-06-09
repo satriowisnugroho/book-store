@@ -14,9 +14,9 @@ type BookUsecaseInterface struct {
 	mock.Mock
 }
 
-// GetBooks provides a mock function with given fields: ctx
-func (_m *BookUsecaseInterface) GetBooks(ctx context.Context) ([]*entity.Book, int, error) {
-	ret := _m.Called(ctx)
+// GetBooks provides a mock function with given fields: ctx, payload
+func (_m *BookUsecaseInterface) GetBooks(ctx context.Context, payload entity.GetBooksPayload) ([]*entity.Book, int, error) {
+	ret := _m.Called(ctx, payload)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetBooks")
@@ -25,25 +25,25 @@ func (_m *BookUsecaseInterface) GetBooks(ctx context.Context) ([]*entity.Book, i
 	var r0 []*entity.Book
 	var r1 int
 	var r2 error
-	if rf, ok := ret.Get(0).(func(context.Context) ([]*entity.Book, int, error)); ok {
-		return rf(ctx)
+	if rf, ok := ret.Get(0).(func(context.Context, entity.GetBooksPayload) ([]*entity.Book, int, error)); ok {
+		return rf(ctx, payload)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context) []*entity.Book); ok {
-		r0 = rf(ctx)
+	if rf, ok := ret.Get(0).(func(context.Context, entity.GetBooksPayload) []*entity.Book); ok {
+		r0 = rf(ctx, payload)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]*entity.Book)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context) int); ok {
-		r1 = rf(ctx)
+	if rf, ok := ret.Get(1).(func(context.Context, entity.GetBooksPayload) int); ok {
+		r1 = rf(ctx, payload)
 	} else {
 		r1 = ret.Get(1).(int)
 	}
 
-	if rf, ok := ret.Get(2).(func(context.Context) error); ok {
-		r2 = rf(ctx)
+	if rf, ok := ret.Get(2).(func(context.Context, entity.GetBooksPayload) error); ok {
+		r2 = rf(ctx, payload)
 	} else {
 		r2 = ret.Error(2)
 	}
