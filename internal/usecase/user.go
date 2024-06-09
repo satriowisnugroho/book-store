@@ -11,7 +11,7 @@ import (
 	"github.com/satriowisnugroho/book-store/internal/helper"
 	repo "github.com/satriowisnugroho/book-store/internal/repository/postgres"
 	"github.com/satriowisnugroho/book-store/internal/response"
-	"golang.org/x/crypto/bcrypt"
+	"github.com/satriowisnugroho/book-store/pkg/auth"
 )
 
 // UserUsecaseInterface define contract for user related functions to usecase
@@ -21,14 +21,16 @@ type UserUsecaseInterface interface {
 }
 
 type UserUsecase struct {
-	jwtSecret string
-	userRepo  repo.UserRepositoryInterface
+	jwtSecret      string
+	passwordHasher auth.PasswordHasher
+	userRepo       repo.UserRepositoryInterface
 }
 
-func NewUserUsecase(js string, ur repo.UserRepositoryInterface) *UserUsecase {
+func NewUserUsecase(js string, ph auth.PasswordHasher, ur repo.UserRepositoryInterface) *UserUsecase {
 	return &UserUsecase{
-		jwtSecret: js,
-		userRepo:  ur,
+		jwtSecret:      js,
+		passwordHasher: ph,
+		userRepo:       ur,
 	}
 }
 
@@ -43,16 +45,15 @@ func (uc *UserUsecase) CreateUser(ctx context.Context, payload *entity.RegisterP
 		return nil, err
 	}
 
-	// TODO: Move to interface to mock the implementation
-	cryptedPassword, err := bcrypt.GenerateFromPassword([]byte(payload.Password), bcrypt.DefaultCost)
+	cryptedPassword, err := uc.passwordHasher.GenerateFromPassword(payload.Password)
 	if err != nil {
-		return nil, errors.Wrap(fmt.Errorf("bcrypt.GenerateFromPassword: %w", err), functionName)
+		return nil, errors.Wrap(fmt.Errorf("uc.passwordHasher.GenerateFromPassword: %w", err), functionName)
 	}
 
 	user := &entity.User{}
 	user.Email = payload.Email
 	user.Fullname = payload.Fullname
-	user.CryptedPassword = string(cryptedPassword)
+	user.CryptedPassword = cryptedPassword
 	if err := uc.userRepo.CreateUser(ctx, user); err != nil {
 		if _, ok := err.(response.CustomError); ok {
 			return nil, err
@@ -76,7 +77,7 @@ func (uc *UserUsecase) Login(ctx context.Context, payload *entity.LoginPayload) 
 		return nil, errors.Wrap(fmt.Errorf("uc.userRepo.GetUserByEmail: %w", err), functionName)
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.CryptedPassword), []byte(payload.Password))
+	err = uc.passwordHasher.CompareHashAndPassword(user.CryptedPassword, payload.Password)
 	if err != nil {
 		return nil, response.ErrInvalidPassword
 	}

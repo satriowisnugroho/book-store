@@ -12,6 +12,7 @@ import (
 	httpv1 "github.com/satriowisnugroho/book-store/internal/handler/http/v1"
 	"github.com/satriowisnugroho/book-store/internal/repository/postgres"
 	"github.com/satriowisnugroho/book-store/internal/usecase"
+	"github.com/satriowisnugroho/book-store/pkg/auth"
 	"github.com/satriowisnugroho/book-store/pkg/httpserver"
 	"github.com/satriowisnugroho/book-store/pkg/logger"
 	pkgpostgres "github.com/satriowisnugroho/book-store/pkg/postgres"
@@ -20,7 +21,11 @@ import (
 func main() {
 	cfg := config.NewConfig()
 
+	// Initialize logger
 	l := logger.New(cfg.LogLevel)
+
+	// Initialize password hasher
+	passwordHasher := &auth.BcryptPasswordHasher{}
 
 	// Initialize postgres
 	postgresDb, err := pkgpostgres.NewPostgres(&cfg.DatabaseConfig)
@@ -37,7 +42,7 @@ func main() {
 	// Initialize usecases
 	bookUsecase := usecase.NewBookUsecase(bookRepo)
 	orderUsecase := usecase.NewOrderUsecase(bookRepo, orderRepo)
-	userUsecase := usecase.NewUserUsecase(cfg.JWTSecret, userRepo)
+	userUsecase := usecase.NewUserUsecase(cfg.JWTSecret, passwordHasher, userRepo)
 
 	// HTTP Server
 	handler := gin.New()
