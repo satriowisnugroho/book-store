@@ -33,3 +33,9 @@ func (o *OrderPayload) Validate() error {
 
 	return nil
 }
+
+// OrderResponse holds login response
+type OrderResponse struct {
+	*Order
+	Book *Book
+}

@@ -96,7 +96,7 @@ func TestGetOrderHistory(t *testing.T) {
 			l.On("Error", mock.Anything, mock.Anything)
 
 			orderUsecase := &testmock.OrderUsecaseInterface{}
-			orderUsecase.On("GetOrdersByUserID", mock.Anything).Return([]*entity.Order{{}}, tc.uOrderErr)
+			orderUsecase.On("GetOrdersByUserID", mock.Anything).Return([]*entity.OrderResponse{{}}, tc.uOrderErr)
 
 			h := &httpv1.OrderHandler{l, orderUsecase}
 			h.GetOrderHistory(ctx)

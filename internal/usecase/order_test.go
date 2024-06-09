@@ -87,6 +87,8 @@ func TestGetOrdersByUserID(t *testing.T) {
 		ctx                   *gin.Context
 		rGetOrdersByUserIDRes []*entity.Order
 		rGetOrdersByUserIDErr error
+		rGetBookByIDRes       *entity.Book
+		rGetBookByIDErr       error
 		wantErr               bool
 	}{
 		{
@@ -101,18 +103,29 @@ func TestGetOrdersByUserID(t *testing.T) {
 			wantErr:               true,
 		},
 		{
-			name:    "success",
-			ctx:     fixture.GinCtxBackground(),
-			wantErr: false,
+			name:                  "failed to get book",
+			ctx:                   fixture.GinCtxBackground(),
+			rGetOrdersByUserIDRes: []*entity.Order{{}},
+			rGetBookByIDErr:       errors.New("error get book by id"),
+			wantErr:               true,
+		},
+		{
+			name:                  "success",
+			ctx:                   fixture.GinCtxBackground(),
+			rGetOrdersByUserIDRes: []*entity.Order{{}},
+			wantErr:               false,
 		},
 	}
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
+			bookRepo := &testmock.BookRepositoryInterface{}
+			bookRepo.On("GetBookByID", mock.Anything, mock.Anything).Return(tc.rGetBookByIDRes, tc.rGetBookByIDErr)
+
 			orderRepo := &testmock.OrderRepositoryInterface{}
 			orderRepo.On("GetOrdersByUserID", mock.Anything, mock.Anything).Return(tc.rGetOrdersByUserIDRes, tc.rGetOrdersByUserIDErr)
 
-			uc := usecase.NewOrderUsecase(&testmock.BookRepositoryInterface{}, orderRepo)
+			uc := usecase.NewOrderUsecase(bookRepo, orderRepo)
 			_, err := uc.GetOrdersByUserID(tc.ctx)
 			assert.Equal(t, tc.wantErr, err != nil)
 		})

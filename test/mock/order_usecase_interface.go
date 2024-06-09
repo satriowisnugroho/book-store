@@ -45,23 +45,23 @@ func (_m *OrderUsecaseInterface) CreateOrder(c *gin.Context, payload *entity.Ord
 }
 
 // GetOrdersByUserID provides a mock function with given fields: c
-func (_m *OrderUsecaseInterface) GetOrdersByUserID(c *gin.Context) ([]*entity.Order, error) {
+func (_m *OrderUsecaseInterface) GetOrdersByUserID(c *gin.Context) ([]*entity.OrderResponse, error) {
 	ret := _m.Called(c)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetOrdersByUserID")
 	}
 
-	var r0 []*entity.Order
+	var r0 []*entity.OrderResponse
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*gin.Context) ([]*entity.Order, error)); ok {
+	if rf, ok := ret.Get(0).(func(*gin.Context) ([]*entity.OrderResponse, error)); ok {
 		return rf(c)
 	}
-	if rf, ok := ret.Get(0).(func(*gin.Context) []*entity.Order); ok {
+	if rf, ok := ret.Get(0).(func(*gin.Context) []*entity.OrderResponse); ok {
 		r0 = rf(c)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*entity.Order)
+			r0 = ret.Get(0).([]*entity.OrderResponse)
 		}
 	}
 

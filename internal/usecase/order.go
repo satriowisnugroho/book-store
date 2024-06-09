@@ -15,7 +15,7 @@ import (
 // OrderUsecaseInterface define contract for order related functions to usecase
 type OrderUsecaseInterface interface {
 	CreateOrder(c *gin.Context, payload *entity.OrderPayload) (*entity.Order, error)
-	GetOrdersByUserID(c *gin.Context) ([]*entity.Order, error)
+	GetOrdersByUserID(c *gin.Context) ([]*entity.OrderResponse, error)
 }
 
 type OrderUsecase struct {
@@ -65,7 +65,7 @@ func (uc *OrderUsecase) CreateOrder(c *gin.Context, payload *entity.OrderPayload
 	return order, nil
 }
 
-func (uc *OrderUsecase) GetOrdersByUserID(c *gin.Context) ([]*entity.Order, error) {
+func (uc *OrderUsecase) GetOrdersByUserID(c *gin.Context) ([]*entity.OrderResponse, error) {
 	functionName := "OrderUsecase.GetOrdersByUserID"
 
 	ctx := c.Request.Context()
@@ -78,5 +78,15 @@ func (uc *OrderUsecase) GetOrdersByUserID(c *gin.Context) ([]*entity.Order, erro
 		return nil, errors.Wrap(fmt.Errorf("uc.repo.GetOrdersByUserID: %w", err), functionName)
 	}
 
-	return orders, nil
+	orderRes := []*entity.OrderResponse{}
+	for _, order := range orders {
+		book, err := uc.bookRepo.GetBookByID(ctx, order.BookID)
+		if err != nil {
+			return nil, errors.Wrap(fmt.Errorf("uc.repo.GetOrdersByUserID: %w", err), functionName)
+		}
+
+		orderRes = append(orderRes, &entity.OrderResponse{Order: order, Book: book})
+	}
+
+	return orderRes, nil
 }
