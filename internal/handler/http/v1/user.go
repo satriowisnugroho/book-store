@@ -26,10 +26,10 @@ func newUserHandler(handler *gin.RouterGroup, l logger.LoggerInterface, uu useca
 	}
 }
 
-// @Summary     Register an User
-// @Description An API to register an user
+// @Summary     Register
+// @Description An API to register
 // @ID          create user
-// @Tags  	    user
+// @Tags  	    User
 // @Accept      json
 // @Produce     json
 // @Param       request		body		entity.RegisterPayload		true		"payload"
@@ -62,7 +62,7 @@ func (h *UserHandler) Register(c *gin.Context) {
 // @Summary     Login
 // @Description An API to login
 // @ID          login
-// @Tags  	    user
+// @Tags  	    User
 // @Accept      json
 // @Produce     json
 // @Param       request		body		entity.LoginPayload		true		"payload"

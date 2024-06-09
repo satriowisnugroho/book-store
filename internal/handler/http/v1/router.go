@@ -21,6 +21,9 @@ import (
 // @version     1.0
 // @host        localhost:9999
 // @BasePath    /v1
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func NewRouter(
 	handler *gin.Engine,
 	l logger.LoggerInterface,

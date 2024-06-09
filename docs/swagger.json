@@ -19,7 +19,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "book"
+                    "Book"
                 ],
                 "summary": "Show Book List",
                 "operationId": "book list",
@@ -59,6 +59,11 @@
         },
         "/orders": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "An API to show history of orders",
                 "consumes": [
                     "application/json"
@@ -67,7 +72,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "order"
+                    "Order"
                 ],
                 "summary": "Show History Order",
                 "operationId": "order list",
@@ -96,6 +101,12 @@
                             ]
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -105,6 +116,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "An API to create an order",
                 "consumes": [
                     "application/json"
@@ -113,7 +129,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "order"
+                    "Order"
                 ],
                 "summary": "Create an Order",
                 "operationId": "create order",
@@ -150,6 +166,12 @@
                             ]
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -181,7 +203,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "User"
                 ],
                 "summary": "Login",
                 "operationId": "login",
@@ -235,7 +257,7 @@
         },
         "/users/register": {
             "post": {
-                "description": "An API to register an user",
+                "description": "An API to register",
                 "consumes": [
                     "application/json"
                 ],
@@ -243,9 +265,9 @@
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "User"
                 ],
-                "summary": "Register an User",
+                "summary": "Register",
                 "operationId": "create user",
                 "parameters": [
                     {
@@ -451,6 +473,13 @@
                 },
                 "meta": {}
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

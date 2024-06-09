@@ -32,14 +32,16 @@ func newOrderHandler(handler *gin.RouterGroup, l logger.LoggerInterface, cfg *co
 // @Summary     Create an Order
 // @Description An API to create an order
 // @ID          create order
-// @Tags  	    order
+// @Tags  	    Order
 // @Accept      json
 // @Produce     json
 // @Param       request		body		entity.OrderPayload		true		"payload"
 // @Success     200 {object} response.SuccessBody{data=entity.Order,meta=response.MetaInfo}
+// @Failure     401 {object} response.ErrorBody
 // @Failure     404 {object} response.ErrorBody
 // @Failure     422 {object} response.ErrorBody
 // @Failure     500 {object} response.ErrorBody
+// @Security		BearerAuth
 // @Router      /orders [post]
 func (h *OrderHandler) CreateOrder(c *gin.Context) {
 	msg := "http - v1 - order - CreateOrder"
@@ -66,11 +68,13 @@ func (h *OrderHandler) CreateOrder(c *gin.Context) {
 // @Summary     Show History Order
 // @Description An API to show history of orders
 // @ID          order list
-// @Tags  	    order
+// @Tags  	    Order
 // @Accept      json
 // @Produce     json
 // @Success     200 {object} response.SuccessBody{data=[]entity.Order,meta=response.MetaInfo}
+// @Failure     401 {object} response.ErrorBody
 // @Failure     500 {object} response.ErrorBody
+// @Security		BearerAuth
 // @Router      /orders [get]
 func (h *OrderHandler) GetOrderHistory(c *gin.Context) {
 	orders, err := h.OrderUsecase.GetOrdersByUserID(c)

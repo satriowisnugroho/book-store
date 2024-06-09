@@ -26,7 +26,7 @@ const docTemplate_swagger = `{
                     "application/json"
                 ],
                 "tags": [
-                    "book"
+                    "Book"
                 ],
                 "summary": "Show Book List",
                 "operationId": "book list",
@@ -66,6 +66,11 @@ const docTemplate_swagger = `{
         },
         "/orders": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "An API to show history of orders",
                 "consumes": [
                     "application/json"
@@ -74,7 +79,7 @@ const docTemplate_swagger = `{
                     "application/json"
                 ],
                 "tags": [
-                    "order"
+                    "Order"
                 ],
                 "summary": "Show History Order",
                 "operationId": "order list",
@@ -103,6 +108,12 @@ const docTemplate_swagger = `{
                             ]
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -112,6 +123,11 @@ const docTemplate_swagger = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "An API to create an order",
                 "consumes": [
                     "application/json"
@@ -120,7 +136,7 @@ const docTemplate_swagger = `{
                     "application/json"
                 ],
                 "tags": [
-                    "order"
+                    "Order"
                 ],
                 "summary": "Create an Order",
                 "operationId": "create order",
@@ -157,6 +173,12 @@ const docTemplate_swagger = `{
                             ]
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -188,7 +210,7 @@ const docTemplate_swagger = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "User"
                 ],
                 "summary": "Login",
                 "operationId": "login",
@@ -242,7 +264,7 @@ const docTemplate_swagger = `{
         },
         "/users/register": {
             "post": {
-                "description": "An API to register an user",
+                "description": "An API to register",
                 "consumes": [
                     "application/json"
                 ],
@@ -250,9 +272,9 @@ const docTemplate_swagger = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "User"
                 ],
-                "summary": "Register an User",
+                "summary": "Register",
                 "operationId": "create user",
                 "parameters": [
                     {
@@ -458,6 +480,13 @@ const docTemplate_swagger = `{
                 },
                 "meta": {}
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`
