@@ -54,6 +54,10 @@ func (uc *UserUsecase) CreateUser(ctx context.Context, payload *entity.RegisterP
 	user.Fullname = payload.Fullname
 	user.CryptedPassword = string(cryptedPassword)
 	if err := uc.userRepo.CreateUser(ctx, user); err != nil {
+		if _, ok := err.(response.CustomError); ok {
+			return nil, err
+		}
+
 		return nil, errors.Wrap(fmt.Errorf("uc.userRepo.CreateUser: %w", err), functionName)
 	}
 

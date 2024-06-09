@@ -34,7 +34,7 @@ func newBookHandler(handler *gin.RouterGroup, l logger.LoggerInterface, bu useca
 func (h *BookHandler) GetBooks(c *gin.Context) {
 	books, err := h.BookUsecase.GetBooks(c.Request.Context())
 	if err != nil {
-		h.Logger.Error(err, "http - v1 - GetBooks")
+		h.Logger.Error(err, "http - v1 - book - GetBooks: GetBooks")
 		response.Error(c, err)
 
 		return

@@ -2,6 +2,7 @@ package v1
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/satriowisnugroho/book-store/internal/config"
@@ -41,9 +42,11 @@ func newOrderHandler(handler *gin.RouterGroup, l logger.LoggerInterface, cfg *co
 // @Failure     500 {object} response.ErrorBody
 // @Router      /orders [post]
 func (h *OrderHandler) CreateOrder(c *gin.Context) {
+	msg := "http - v1 - order - CreateOrder"
+
 	var payload entity.OrderPayload
 	if err := json.NewDecoder(c.Request.Body).Decode(&payload); err != nil {
-		h.Logger.Error(err, "http - v1 - Decode payload")
+		h.Logger.Error(err, fmt.Sprintf("%s: Decode payload", msg))
 		response.Error(c, err)
 
 		return
@@ -51,7 +54,7 @@ func (h *OrderHandler) CreateOrder(c *gin.Context) {
 
 	order, err := h.OrderUsecase.CreateOrder(c, &payload)
 	if err != nil {
-		h.Logger.Error(err, "http - v1 - CreateOrder")
+		h.Logger.Error(err, fmt.Sprintf("%s: CreateOrder", msg))
 		response.Error(c, err)
 
 		return
@@ -72,7 +75,7 @@ func (h *OrderHandler) CreateOrder(c *gin.Context) {
 func (h *OrderHandler) GetOrderHistory(c *gin.Context) {
 	orders, err := h.OrderUsecase.GetOrdersByUserID(c)
 	if err != nil {
-		h.Logger.Error(err, "http - v1 - GetOrderHistory")
+		h.Logger.Error(err, "http - v1 - order - GetOrderHistory: GetOrderHistory")
 		response.Error(c, err)
 
 		return

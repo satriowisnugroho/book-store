@@ -2,6 +2,7 @@ package v1
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/satriowisnugroho/book-store/internal/entity"
@@ -25,8 +26,6 @@ func newUserHandler(handler *gin.RouterGroup, l logger.LoggerInterface, uu useca
 	}
 }
 
-// TODO: Adjust log "http - v1 - UserHandler - Register - Decode payload"
-
 // @Summary     Register an User
 // @Description An API to register an user
 // @ID          create user
@@ -39,9 +38,11 @@ func newUserHandler(handler *gin.RouterGroup, l logger.LoggerInterface, uu useca
 // @Failure     500 {object} response.ErrorBody
 // @Router      /users/register [post]
 func (h *UserHandler) Register(c *gin.Context) {
+	msg := "http - v1 - User - Register"
+
 	var payload entity.RegisterPayload
 	if err := json.NewDecoder(c.Request.Body).Decode(&payload); err != nil {
-		h.Logger.Error(err, "http - v1 - Decode payload")
+		h.Logger.Error(err, fmt.Sprintf("%s: Decode payload", msg))
 		response.Error(c, err)
 
 		return
@@ -49,8 +50,7 @@ func (h *UserHandler) Register(c *gin.Context) {
 
 	user, err := h.UserUsecase.CreateUser(c.Request.Context(), &payload)
 	if err != nil {
-		// TODO: Handle response error
-		h.Logger.Error(err, "http - v1 - CreateUser")
+		h.Logger.Error(err, fmt.Sprintf("%s: CreateUser", msg))
 		response.Error(c, err)
 
 		return
@@ -71,9 +71,11 @@ func (h *UserHandler) Register(c *gin.Context) {
 // @Failure     500 {object} response.ErrorBody
 // @Router      /users/login [post]
 func (h *UserHandler) Login(c *gin.Context) {
+	msg := "http - v1 - User - Login"
+
 	var payload entity.LoginPayload
 	if err := json.NewDecoder(c.Request.Body).Decode(&payload); err != nil {
-		h.Logger.Error(err, "http - v1 - Decode payload")
+		h.Logger.Error(err, fmt.Sprintf("%s: Decode payload", msg))
 		response.Error(c, err)
 
 		return
@@ -81,7 +83,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 
 	res, err := h.UserUsecase.Login(c.Request.Context(), &payload)
 	if err != nil {
-		h.Logger.Error(err, "http - v1 - Login")
+		h.Logger.Error(err, fmt.Sprintf("%s: Login", msg))
 		response.Error(c, err)
 
 		return
