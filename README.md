@@ -22,3 +22,8 @@ Book Store is a service for online book store.
 5. Download modules `go mod download`
 6. Run the service by running `make start`
 7. Go to API Docs http://localhost:9999/swagger/index.html
+
+### ERD Diagram
+
+[DBDiagram](https://dbdiagram.io/d/Online-Book-Store-6661a65b9713410b05ed2fea)
+![ERD Diagram](images/ERD.png)
