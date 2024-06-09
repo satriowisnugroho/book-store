@@ -21,8 +21,11 @@ func newUserHandler(handler *gin.RouterGroup, l logger.LoggerInterface, uu useca
 	h := handler.Group("/users")
 	{
 		h.POST("/register", r.Register)
+		h.POST("/login", r.Login)
 	}
 }
+
+// TODO: Adjust log "http - v1 - UserHandler - Register - Decode payload"
 
 // @Summary     Register an User
 // @Description An API to register an user
@@ -46,6 +49,7 @@ func (h *UserHandler) Register(c *gin.Context) {
 
 	user, err := h.UserUsecase.CreateUser(c.Request.Context(), &payload)
 	if err != nil {
+		// TODO: Handle response error
 		h.Logger.Error(err, "http - v1 - CreateUser")
 		response.Error(c, err)
 
@@ -53,4 +57,35 @@ func (h *UserHandler) Register(c *gin.Context) {
 	}
 
 	response.OK(c, user, "Successfully create an user")
+}
+
+// @Summary     Login
+// @Description An API to login
+// @ID          login
+// @Tags  	    user
+// @Accept      json
+// @Produce     json
+// @Param       request		body		entity.LoginPayload		true		"payload"
+// @Success     200 {object} response.SuccessBody{data=entity.User,meta=response.MetaInfo}
+// @Failure     401 {object} response.ErrorBody
+// @Failure     500 {object} response.ErrorBody
+// @Router      /users/login [post]
+func (h *UserHandler) Login(c *gin.Context) {
+	var payload entity.LoginPayload
+	if err := json.NewDecoder(c.Request.Body).Decode(&payload); err != nil {
+		h.Logger.Error(err, "http - v1 - Decode payload")
+		response.Error(c, err)
+
+		return
+	}
+
+	res, err := h.UserUsecase.Login(c.Request.Context(), &payload)
+	if err != nil {
+		h.Logger.Error(err, "http - v1 - Login")
+		response.Error(c, err)
+
+		return
+	}
+
+	response.OK(c, res, "")
 }
