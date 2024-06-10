@@ -11,11 +11,11 @@
 TRUNCATE public.books RESTART IDENTITY CASCADE;
 
 COPY public.books (isbn, title, price, created_at, updated_at) FROM stdin;
-978-0-545-01022-1	Harry Potter	25000	2024-06-06 15:37:14	2024-06-06 15:37:14
-978-0-545-01022-2	Narnia	20000	2024-06-06 15:37:14	2024-06-06 15:37:14
-978-0-545-01022-3	The Hunger Games	10000	2024-06-06 15:37:14	2024-06-06 15:37:14
-978-0-545-01022-4	The Godfather	15000	2024-06-06 15:37:14	2024-06-06 15:37:14
-978-0-545-01022-5	Forrest Gump	30000	2024-06-06 15:37:14	2024-06-06 15:37:14
+978-0-545-01022-1	Harry Potter	25000	2024-06-07 22:43:27.750419+00	2024-06-07 22:43:27.750419+00
+978-0-545-01022-2	Narnia	20000	2024-06-07 22:43:27.750419+00	2024-06-07 22:43:27.750419+00
+978-0-545-01022-3	The Hunger Games	10000	2024-06-07 22:43:27.750419+00	2024-06-07 22:43:27.750419+00
+978-0-545-01022-4	The Godfather	15000	2024-06-07 22:43:27.750419+00	2024-06-07 22:43:27.750419+00
+978-0-545-01022-5	Forrest Gump	30000	2024-06-07 22:43:27.750419+00	2024-06-07 22:43:27.750419+00
 \.
 
 --
@@ -25,8 +25,8 @@ COPY public.books (isbn, title, price, created_at, updated_at) FROM stdin;
 TRUNCATE public.orders RESTART IDENTITY CASCADE;
 
 COPY public.orders (user_id, fee, total_price, created_at, updated_at) FROM stdin;
-1	1000	101000	2024-06-07 22:43:27.750419	2024-06-07 22:43:27.750419
-2	1000	81000	2024-06-07 22:43:27.750419	2024-06-07 22:43:27.750419
+1	1000	101000	2024-06-07 22:43:27.750419+00	2024-06-07 22:43:27.750419+00
+2	1000	81000	2024-06-07 22:43:27.750419+00	2024-06-07 22:43:27.750419+00
 \.
 
 --
@@ -36,8 +36,8 @@ COPY public.orders (user_id, fee, total_price, created_at, updated_at) FROM stdi
 TRUNCATE public.order_items RESTART IDENTITY CASCADE;
 
 COPY public.order_items (order_id, book_id, quantity, price, total_item_price, created_at, updated_at) FROM stdin;
-1	1	4	25000	101000	2024-06-07 22:43:27.750419	2024-06-07 22:43:27.750419
-2	2	4	20000	81000	2024-06-07 22:43:27.750419	2024-06-07 22:43:27.750419
+1	1	4	25000	101000	2024-06-07 22:43:27.750419+00	2024-06-07 22:43:27.750419+00
+2	2	4	20000	81000	2024-06-07 22:43:27.750419+00	2024-06-07 22:43:27.750419+00
 \.
 
 --
@@ -47,8 +47,8 @@ COPY public.order_items (order_id, book_id, quantity, price, total_item_price, c
 TRUNCATE public.users RESTART IDENTITY CASCADE;
 
 COPY public.users (email, fullname, crypted_password, created_at, updated_at) FROM stdin;
-foo@gmail.com	bar	qwerty	2024-06-06 15:37:14	2024-06-06 15:37:14
-bar@gmail.com	foo	qwerty	2024-06-06 15:37:14	2024-06-06 15:37:14
+foo@gmail.com	bar	qwerty	2024-06-07 22:43:27.750419+00	2024-06-07 22:43:27.750419+00
+bar@gmail.com	foo	qwerty	2024-06-07 22:43:27.750419+00	2024-06-07 22:43:27.750419+00
 \.
 
 --

@@ -107,7 +107,7 @@ func (r *OrderItemRepository) GetOrderItemsByOrderID(ctx context.Context, orderI
 	}
 
 	query := fmt.Sprintf("SELECT %s FROM %s WHERE order_id = %d", OrderItemAttributes, OrderItemTableName, orderID)
-	rows, err := r.fetch(ctx, query, orderID)
+	rows, err := r.fetch(ctx, query)
 	if err != nil {
 		return nil, errors.Wrap(err, functionName)
 	}
