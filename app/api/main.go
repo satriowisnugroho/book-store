@@ -37,11 +37,12 @@ func main() {
 	// Initialize repositories
 	bookRepo := postgres.NewBookRepository(postgresDb.Db)
 	orderRepo := postgres.NewOrderRepository(postgresDb.Db)
+	orderItemRepo := postgres.NewOrderItemRepository(postgresDb.Db)
 	userRepo := postgres.NewUserRepository(postgresDb.Db)
 
 	// Initialize usecases
 	bookUsecase := usecase.NewBookUsecase(bookRepo)
-	orderUsecase := usecase.NewOrderUsecase(bookRepo, orderRepo)
+	orderUsecase := usecase.NewOrderUsecase(bookRepo, orderRepo, orderItemRepo)
 	userUsecase := usecase.NewUserUsecase(cfg.JWTSecret, passwordHasher, userRepo)
 
 	// HTTP Server

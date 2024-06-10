@@ -19,9 +19,3 @@ type Order struct {
 type OrderPayload struct {
 	OrderItems []OrderItemPayload `json:"order_items"`
 }
-
-// OrderResponse holds order response
-type OrderResponse struct {
-	*Order
-	Book *Book
-}

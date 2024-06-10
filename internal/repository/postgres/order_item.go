@@ -11,13 +11,12 @@ import (
 	"github.com/satriowisnugroho/book-store/internal/entity"
 	"github.com/satriowisnugroho/book-store/internal/helper"
 	dbentity "github.com/satriowisnugroho/book-store/internal/repository/postgres/entity"
-	"github.com/satriowisnugroho/book-store/internal/response"
 )
 
 // OrderItemRepositoryInterface define contract for orderItem related functions to repository
 type OrderItemRepositoryInterface interface {
 	CreateOrderItem(ctx context.Context, orderItem *entity.OrderItem) error
-	GetOrderItemByID(ctx context.Context, orderItemID int) (*entity.OrderItem, error)
+	GetOrderItemsByOrderID(ctx context.Context, orderID int) ([]*entity.OrderItem, error)
 }
 
 // OrderItemRepository holds database connection
@@ -62,7 +61,7 @@ func (r *OrderItemRepository) fetch(ctx context.Context, query string, args ...i
 }
 
 // CreateOrderItem insert orderItem data into database
-func (r *OrderRepository) CreateOrderItem(ctx context.Context, orderItem *entity.OrderItem) error {
+func (r *OrderItemRepository) CreateOrderItem(ctx context.Context, orderItem *entity.OrderItem) error {
 	functionName := "OrderItemRepository.CreateOrderItem"
 
 	if err := helper.CheckDeadline(ctx); err != nil {
@@ -92,23 +91,19 @@ func (r *OrderRepository) CreateOrderItem(ctx context.Context, orderItem *entity
 	return nil
 }
 
-// GetOrderItemByID query to get orderItem by ID
-func (r *OrderItemRepository) GetOrderItemByID(ctx context.Context, orderItemID int) (*entity.OrderItem, error) {
-	functionName := "OrderItemRepository.GetOrderItemByID"
+// GetOrderItemsByOrderID query to get orderItem by order ID
+func (r *OrderItemRepository) GetOrderItemsByOrderID(ctx context.Context, orderID int) ([]*entity.OrderItem, error) {
+	functionName := "OrderItemRepository.GetOrderItemsByOrderID"
 
 	if err := helper.CheckDeadline(ctx); err != nil {
 		return nil, errors.Wrap(err, functionName)
 	}
 
-	query := fmt.Sprintf("SELECT %s FROM %s WHERE id = $1 LIMIT 1", OrderItemAttributes, OrderItemTableName)
-	rows, err := r.fetch(ctx, query, orderItemID)
+	query := fmt.Sprintf("SELECT %s FROM %s", OrderItemAttributes, OrderItemTableName)
+	rows, err := r.fetch(ctx, query, orderID)
 	if err != nil {
 		return nil, errors.Wrap(err, functionName)
 	}
 
-	if len(rows) == 0 {
-		return nil, response.ErrNotFound
-	}
-
-	return rows[0], nil
+	return rows, nil
 }

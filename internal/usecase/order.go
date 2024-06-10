@@ -15,18 +15,20 @@ import (
 // OrderUsecaseInterface define contract for order related functions to usecase
 type OrderUsecaseInterface interface {
 	CreateOrder(c *gin.Context, payload *entity.OrderPayload) (*entity.Order, error)
-	GetOrdersByUserID(c *gin.Context, limit, offset int) ([]*entity.OrderResponse, int, error)
+	GetOrdersByUserID(c *gin.Context, limit, offset int) ([]*entity.Order, int, error)
 }
 
 type OrderUsecase struct {
-	bookRepo  repo.BookRepositoryInterface
-	orderRepo repo.OrderRepositoryInterface
+	bookRepo      repo.BookRepositoryInterface
+	orderRepo     repo.OrderRepositoryInterface
+	orderItemRepo repo.OrderItemRepositoryInterface
 }
 
-func NewOrderUsecase(br repo.BookRepositoryInterface, or repo.OrderRepositoryInterface) *OrderUsecase {
+func NewOrderUsecase(br repo.BookRepositoryInterface, or repo.OrderRepositoryInterface, ori repo.OrderItemRepositoryInterface) *OrderUsecase {
 	return &OrderUsecase{
-		bookRepo:  br,
-		orderRepo: or,
+		bookRepo:      br,
+		orderRepo:     or,
+		orderItemRepo: ori,
 	}
 }
 
@@ -85,7 +87,7 @@ func (uc *OrderUsecase) CreateOrder(c *gin.Context, payload *entity.OrderPayload
 	return order, nil
 }
 
-func (uc *OrderUsecase) GetOrdersByUserID(c *gin.Context, limit, offset int) ([]*entity.OrderResponse, int, error) {
+func (uc *OrderUsecase) GetOrdersByUserID(c *gin.Context, limit, offset int) ([]*entity.Order, int, error) {
 	functionName := "OrderUsecase.GetOrdersByUserID"
 
 	ctx := c.Request.Context()
@@ -104,15 +106,23 @@ func (uc *OrderUsecase) GetOrdersByUserID(c *gin.Context, limit, offset int) ([]
 		return nil, 0, errors.Wrap(fmt.Errorf("uc.orderRepo.GetOrdersByUserIDCount: %w", err), functionName)
 	}
 
-	orderRes := []*entity.OrderResponse{}
 	for _, order := range orders {
-		// book, err := uc.bookRepo.GetBookByID(ctx, order.BookID)
-		// if err != nil {
-		// 	return nil, 0, errors.Wrap(fmt.Errorf("uc.bookRepo.GetBookByID: %w", err), functionName)
-		// }
+		orderItems, err := uc.orderItemRepo.GetOrderItemsByOrderID(ctx, order.ID)
+		if err != nil {
+			return nil, 0, errors.Wrap(fmt.Errorf("uc.orderItemRepo.GetOrderItemsByOrderID: %w", err), functionName)
+		}
 
-		orderRes = append(orderRes, &entity.OrderResponse{Order: order})
+		for _, orderItem := range orderItems {
+			book, err := uc.bookRepo.GetBookByID(ctx, orderItem.BookID)
+			if err != nil {
+				return nil, 0, errors.Wrap(fmt.Errorf("uc.bookRepo.GetBookByID: %w", err), functionName)
+			}
+
+			orderItem.Book = book
+		}
+
+		order.OrderItems = orderItems
 	}
 
-	return orderRes, count, nil
+	return orders, count, nil
 }

@@ -59,7 +59,7 @@ func TestCreateOrderItem(t *testing.T) {
 			}
 
 			dbx := sqlx.NewDb(db, "mock")
-			repo := postgres.NewOrderRepository(dbx)
+			repo := postgres.NewOrderItemRepository(dbx)
 
 			err = repo.CreateOrderItem(tc.ctx, tc.input)
 			assert.Equal(t, tc.wantErr, err != nil)
@@ -70,13 +70,13 @@ func TestCreateOrderItem(t *testing.T) {
 	}
 }
 
-func TestGetOrderItemByID(t *testing.T) {
+func TestGetOrderItemsByOrderID(t *testing.T) {
 	testcases := []struct {
 		name      string
 		ctx       context.Context
 		fetchErr  error
 		fetchRows []string
-		expected  *entity.OrderItem
+		expected  []*entity.OrderItem
 		wantErr   bool
 	}{
 		{
@@ -97,16 +97,10 @@ func TestGetOrderItemByID(t *testing.T) {
 			wantErr:   true,
 		},
 		{
-			name:      "record not found",
-			ctx:       context.Background(),
-			fetchRows: postgres.OrderItemColumns,
-			wantErr:   true,
-		},
-		{
 			name:      "success",
 			ctx:       context.Background(),
 			fetchRows: postgres.OrderItemColumns,
-			expected:  &entity.OrderItem{},
+			expected:  []*entity.OrderItem{{}},
 			wantErr:   false,
 		},
 	}
@@ -119,22 +113,22 @@ func TestGetOrderItemByID(t *testing.T) {
 			}
 			defer db.Close()
 
-			mockExpectedQuery := mock.ExpectQuery("^SELECT .+ FROM .+ WHERE id = .+ LIMIT 1")
+			mockExpectedQuery := mock.ExpectQuery("^SELECT .+ FROM .+")
 			if tc.fetchErr != nil {
 				mockExpectedQuery.WillReturnError(tc.fetchErr)
 			} else {
 				rows := sqlmock.NewRows(tc.fetchRows)
 				if tc.expected != nil {
 					rows = rows.AddRow(
-						tc.expected.ID,
-						tc.expected.OrderID,
-						tc.expected.BookID,
-						tc.expected.Quantity,
-						tc.expected.Price,
-						tc.expected.Fee,
-						tc.expected.TotalItemPrice,
-						tc.expected.CreatedAt,
-						tc.expected.UpdatedAt,
+						tc.expected[0].ID,
+						tc.expected[0].OrderID,
+						tc.expected[0].BookID,
+						tc.expected[0].Quantity,
+						tc.expected[0].Price,
+						tc.expected[0].Fee,
+						tc.expected[0].TotalItemPrice,
+						tc.expected[0].CreatedAt,
+						tc.expected[0].UpdatedAt,
 					)
 				} else if len(tc.fetchRows) == 1 {
 					rows = rows.AddRow(1)
@@ -145,7 +139,7 @@ func TestGetOrderItemByID(t *testing.T) {
 
 			dbx := sqlx.NewDb(db, "mock")
 			repo := postgres.NewOrderItemRepository(dbx)
-			result, err := repo.GetOrderItemByID(tc.ctx, 123)
+			result, err := repo.GetOrderItemsByOrderID(tc.ctx, 123)
 			assert.Equal(t, tc.wantErr, err != nil, err)
 			if !tc.wantErr {
 				assert.EqualValues(t, tc.expected, result)
