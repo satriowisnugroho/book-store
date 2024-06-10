@@ -38,29 +38,49 @@ func (uc *OrderUsecase) CreateOrder(c *gin.Context, payload *entity.OrderPayload
 		return nil, errors.Wrap(err, functionName)
 	}
 
-	if err := payload.Validate(); err != nil {
-		return nil, err
-	}
-
-	book, err := uc.bookRepo.GetBookByID(ctx, payload.BookID)
-	if err != nil {
-		if err == response.ErrNotFound {
+	// Validate the payload
+	for _, orderItemPayload := range payload.OrderItems {
+		if err := orderItemPayload.Validate(); err != nil {
 			return nil, err
 		}
-
-		return nil, errors.Wrap(fmt.Errorf("uc.repo.GetBookByID: %w", err), functionName)
 	}
+
+	// TODO: Start trx
 
 	order := &entity.Order{}
 	order.UserID = helper.GetUserIDFromContext(c)
-	order.BookID = book.ID
-	order.Quantity = payload.Quantity
-	order.Price = book.Price
 	order.Fee = config.ServiceFee
-	order.TotalPrice = (payload.Quantity * book.Price) + config.ServiceFee
+	order.TotalPrice = config.ServiceFee
 	if err := uc.orderRepo.CreateOrder(ctx, order); err != nil {
 		return nil, errors.Wrap(fmt.Errorf("uc.repo.CreateOrder: %w", err), functionName)
 	}
+
+	totalPrice := 0
+	for _, orderItemPayload := range payload.OrderItems {
+		book, err := uc.bookRepo.GetBookByID(ctx, orderItemPayload.BookID)
+		if err != nil {
+			if err == response.ErrNotFound {
+				return nil, err
+			}
+
+			return nil, errors.Wrap(fmt.Errorf("uc.repo.GetBookByID: %w", err), functionName)
+		}
+
+		orderItem := &entity.OrderItem{}
+		orderItem.OrderID = order.ID
+		orderItem.BookID = book.ID
+		orderItem.Quantity = orderItemPayload.Quantity
+		orderItem.Price = book.Price
+		orderItem.TotalItemPrice = orderItemPayload.Quantity * book.Price
+		totalPrice += orderItem.TotalItemPrice
+	}
+
+	order.TotalPrice += totalPrice
+	// if err := uc.orderRepo.UpdateOrder(ctx, order); err != nil {
+	// 	return nil, errors.Wrap(fmt.Errorf("uc.repo.CreateOrder: %w", err), functionName)
+	// }
+
+	// TODO: commit trx
 
 	return order, nil
 }
@@ -86,12 +106,12 @@ func (uc *OrderUsecase) GetOrdersByUserID(c *gin.Context, limit, offset int) ([]
 
 	orderRes := []*entity.OrderResponse{}
 	for _, order := range orders {
-		book, err := uc.bookRepo.GetBookByID(ctx, order.BookID)
-		if err != nil {
-			return nil, 0, errors.Wrap(fmt.Errorf("uc.bookRepo.GetBookByID: %w", err), functionName)
-		}
+		// book, err := uc.bookRepo.GetBookByID(ctx, order.BookID)
+		// if err != nil {
+		// 	return nil, 0, errors.Wrap(fmt.Errorf("uc.bookRepo.GetBookByID: %w", err), functionName)
+		// }
 
-		orderRes = append(orderRes, &entity.OrderResponse{Order: order, Book: book})
+		orderRes = append(orderRes, &entity.OrderResponse{Order: order})
 	}
 
 	return orderRes, count, nil
