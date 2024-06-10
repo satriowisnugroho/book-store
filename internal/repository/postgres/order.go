@@ -29,7 +29,7 @@ var (
 	// OrderTableName hold table name for orders
 	OrderTableName = "orders"
 	// OrderColumns list all columns on orders table
-	OrderColumns = []string{"id", "user_id", "book_id", "quantity", "price", "fee", "total_price", "created_at", "updated_at"}
+	OrderColumns = []string{"id", "user_id", "fee", "total_price", "created_at", "updated_at"}
 	// OrderAttributes hold string format of all orders table columns
 	OrderAttributes = strings.Join(OrderColumns, ", ")
 
@@ -82,9 +82,6 @@ func (r *OrderRepository) CreateOrder(ctx context.Context, order *entity.Order) 
 
 	err := r.db.QueryRowContext(ctx, query,
 		order.UserID,
-		order.BookID,
-		order.Quantity,
-		order.Price,
 		order.Fee,
 		order.TotalPrice,
 		order.CreatedAt,

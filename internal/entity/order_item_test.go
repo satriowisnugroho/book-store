@@ -7,20 +7,20 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestOrderPayloadValidate(t *testing.T) {
+func TestOrderItemPayloadValidate(t *testing.T) {
 	testcases := []struct {
 		name    string
-		payload *entity.OrderPayload
+		payload *entity.OrderItemPayload
 		wantErr bool
 	}{
 		{
 			name:    "invalid quantity",
-			payload: &entity.OrderPayload{},
+			payload: &entity.OrderItemPayload{},
 			wantErr: true,
 		},
 		{
 			name:    "success",
-			payload: &entity.OrderPayload{Quantity: 5},
+			payload: &entity.OrderItemPayload{Quantity: 5},
 			wantErr: false,
 		},
 	}

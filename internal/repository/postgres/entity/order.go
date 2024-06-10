@@ -10,9 +10,6 @@ import (
 type Order struct {
 	ID         int       `db:"id"`
 	UserID     int       `db:"user_id"`
-	BookID     int       `db:"book_id"`
-	Quantity   int       `db:"quantity"`
-	Price      int       `db:"price"`
 	Fee        int       `db:"fee"`
 	TotalPrice int       `db:"total_price"`
 	CreatedAt  time.Time `db:"created_at"`
@@ -24,9 +21,6 @@ func (e *Order) ToEntity() *entity.Order {
 	return &entity.Order{
 		ID:         e.ID,
 		UserID:     e.UserID,
-		BookID:     e.BookID,
-		Quantity:   e.Quantity,
-		Price:      e.Price,
 		Fee:        e.Fee,
 		TotalPrice: e.TotalPrice,
 		CreatedAt:  e.CreatedAt,

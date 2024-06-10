@@ -122,9 +122,6 @@ func TestGetOrdersByUserID(t *testing.T) {
 					rows = rows.AddRow(
 						tc.expected[0].ID,
 						tc.expected[0].UserID,
-						tc.expected[0].BookID,
-						tc.expected[0].Quantity,
-						tc.expected[0].Price,
 						tc.expected[0].Fee,
 						tc.expected[0].TotalPrice,
 						tc.expected[0].CreatedAt,
