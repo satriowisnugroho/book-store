@@ -32,6 +32,12 @@ const docTemplate_swagger = `{
                 "operationId": "book list",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "title search by keyword",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "offset",
                         "name": "offset",

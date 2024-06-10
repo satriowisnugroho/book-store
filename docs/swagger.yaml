@@ -121,6 +121,10 @@ paths:
       description: An API to show list of books
       operationId: book list
       parameters:
+      - description: title search by keyword
+        in: query
+        name: keyword
+        type: string
       - description: offset
         in: query
         name: offset

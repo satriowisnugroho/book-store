@@ -29,6 +29,7 @@ func newBookHandler(handler *gin.RouterGroup, l logger.LoggerInterface, bu useca
 // @Tags  	    Book
 // @Accept      json
 // @Produce     json
+// @Param       keyword 		query		string 		false 	"title search by keyword"
 // @Param       offset 			query 	integer 	false		"offset"
 // @Param       limit 			query 	integer 	false 	"limit"
 // @Success     200 {object} response.SuccessBody{data=[]entity.Book,meta=response.MetaInfo}
@@ -37,8 +38,9 @@ func newBookHandler(handler *gin.RouterGroup, l logger.LoggerInterface, bu useca
 func (h *BookHandler) GetBooks(c *gin.Context) {
 	limit, offset := helper.GetLimitOffsetFromURLQuery(c)
 	payload := entity.GetBooksPayload{
-		Offset: offset,
-		Limit:  limit,
+		TitleKeyword: c.Query("keyword"),
+		Offset:       offset,
+		Limit:        limit,
 	}
 	books, count, err := h.BookUsecase.GetBooks(c.Request.Context(), payload)
 	if err != nil {
@@ -48,5 +50,5 @@ func (h *BookHandler) GetBooks(c *gin.Context) {
 		return
 	}
 
-	response.OKWithPagination(c, books, "", count, 0, 0)
+	response.OKWithPagination(c, books, "", count, offset, limit)
 }
