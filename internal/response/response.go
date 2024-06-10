@@ -91,6 +91,8 @@ type MetaInfo struct {
 const (
 	// ErrorCodeUnexpectedError Error code for unexpected error
 	ErrorCodeUnexpectedError = 9999
+	// ErrorCodeNoSQLTransactionFound Error code for no sql transaction found
+	ErrorCodeNoSQLTransactionFound = 9000
 
 	// ErrorCodeNotFound Error code for path not found
 	ErrorCodeNotFound = 10000
@@ -130,6 +132,12 @@ var (
 		Message:  "Forbidden",
 		Code:     ErrorCodeForbidden,
 		HTTPCode: http.StatusForbidden,
+	}
+	// ErrNoSQLTransactionFound defines no sql transaction when do the db transaction
+	ErrNoSQLTransactionFound = CustomError{
+		Message:  "No SQL transaction found",
+		Code:     ErrorCodeNoSQLTransactionFound,
+		HTTPCode: http.StatusInternalServerError,
 	}
 	// ErrInvalidQuantity define error when invalid quantity
 	ErrInvalidQuantity = CustomError{

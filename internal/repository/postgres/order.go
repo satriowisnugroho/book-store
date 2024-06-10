@@ -18,6 +18,7 @@ type OrderRepositoryInterface interface {
 	CreateOrder(ctx context.Context, order *entity.Order) error
 	GetOrdersByUserID(ctx context.Context, userID, limit, offset int) ([]*entity.Order, error)
 	GetOrdersByUserIDCount(ctx context.Context, userID int) (int, error)
+	UpdateOrder(ctx context.Context, dbTrx interface{}, order *entity.Order) error
 }
 
 // OrderRepository holds database connection
@@ -128,4 +129,35 @@ func (r *OrderRepository) GetOrdersByUserIDCount(ctx context.Context, userID int
 	}
 
 	return count, nil
+}
+
+// UpdateOrder update a order
+func (r *OrderRepository) UpdateOrder(ctx context.Context, dbTrx interface{}, order *entity.Order) error {
+	functionName := "OrderRepository.UpdateOrder"
+
+	if err := helper.CheckDeadline(ctx); err != nil {
+		return errors.Wrap(err, functionName)
+	}
+
+	now := time.Now()
+	order.UpdatedAt = now
+
+	query := fmt.Sprintf("UPDATE %s SET %s WHERE id = $%d", OrderTableName, UpdateColumnsValues(OrderCreationColumns), len(OrderColumns))
+
+	tx := Tx(r.db, dbTrx)
+	_, err := tx.ExecContext(
+		ctx,
+		query,
+		order.UserID,
+		order.Fee,
+		order.TotalPrice,
+		order.CreatedAt,
+		order.UpdatedAt,
+		order.ID,
+	)
+	if err != nil {
+		return errors.Wrap(err, functionName)
+	}
+
+	return nil
 }

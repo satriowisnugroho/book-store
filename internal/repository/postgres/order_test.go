@@ -113,7 +113,7 @@ func TestGetOrdersByUserID(t *testing.T) {
 			}
 			defer db.Close()
 
-			mockExpectedQuery := mock.ExpectQuery("SELECT .+ FROM .+ WHERE user_id = .+ LIMIT .+ OFFSET .+")
+			mockExpectedQuery := mock.ExpectQuery("SELECT .+ FROM orders WHERE user_id = .+ LIMIT .+ OFFSET .+")
 			if tc.fetchErr != nil {
 				mockExpectedQuery.WillReturnError(tc.fetchErr)
 			} else {
@@ -197,6 +197,54 @@ func TestGetOrdersByUserIDCount(t *testing.T) {
 			if !tc.wantErr {
 				assert.EqualValues(t, tc.expected, result)
 			}
+		})
+	}
+}
+
+func TestUpdateOrder(t *testing.T) {
+	testcases := []struct {
+		name      string
+		ctx       context.Context
+		updateErr error
+		wantErr   bool
+	}{
+		{
+			name:    "deadline context",
+			ctx:     fixture.CtxEnded(),
+			wantErr: true,
+		},
+		{
+			name:      "fail exec query",
+			ctx:       context.Background(),
+			updateErr: errors.New("fail exec"),
+			wantErr:   true,
+		},
+		{
+			name:    "success",
+			ctx:     context.Background(),
+			wantErr: false,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			db, mock, err := sqlmock.New()
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			}
+			defer db.Close()
+
+			mockExpectedQuery := mock.ExpectExec("UPDATE orders SET .+ WHERE id = .+")
+			if tc.updateErr != nil {
+				mockExpectedQuery.WillReturnError(tc.updateErr)
+			} else {
+				mockExpectedQuery.WillReturnResult(sqlmock.NewResult(1, 1))
+			}
+
+			dbx := sqlx.NewDb(db, "mock")
+			repo := postgres.NewOrderRepository(dbx)
+			err = repo.UpdateOrder(tc.ctx, nil, &entity.Order{})
+			assert.Equal(t, tc.wantErr, err != nil, err)
 		})
 	}
 }
