@@ -19,16 +19,23 @@ type OrderUsecaseInterface interface {
 }
 
 type OrderUsecase struct {
-	bookRepo      repo.BookRepositoryInterface
-	orderRepo     repo.OrderRepositoryInterface
-	orderItemRepo repo.OrderItemRepositoryInterface
+	dbTransactionRepo repo.PostgresTransactionRepositoryInterface
+	bookRepo          repo.BookRepositoryInterface
+	orderRepo         repo.OrderRepositoryInterface
+	orderItemRepo     repo.OrderItemRepositoryInterface
 }
 
-func NewOrderUsecase(br repo.BookRepositoryInterface, or repo.OrderRepositoryInterface, ori repo.OrderItemRepositoryInterface) *OrderUsecase {
+func NewOrderUsecase(
+	ptr repo.PostgresTransactionRepositoryInterface,
+	br repo.BookRepositoryInterface,
+	or repo.OrderRepositoryInterface,
+	oir repo.OrderItemRepositoryInterface,
+) *OrderUsecase {
 	return &OrderUsecase{
-		bookRepo:      br,
-		orderRepo:     or,
-		orderItemRepo: ori,
+		dbTransactionRepo: ptr,
+		bookRepo:          br,
+		orderRepo:         or,
+		orderItemRepo:     oir,
 	}
 }
 
@@ -47,7 +54,19 @@ func (uc *OrderUsecase) CreateOrder(c *gin.Context, payload *entity.OrderPayload
 		}
 	}
 
-	// TODO: Start trx
+	// Begin transaction
+	tx, err := uc.dbTransactionRepo.StartTransactionQuery(ctx)
+	if err != nil {
+		return nil, errors.Wrap(fmt.Errorf("uc.dbTransactionRepo.StartTransactionQuery: %w", err), functionName)
+	}
+
+	// Create flag and defer rollback when flag is true
+	rollbackProcess := true
+	defer func() {
+		if rollbackProcess {
+			uc.dbTransactionRepo.RollbackTransactionQuery(ctx, tx)
+		}
+	}()
 
 	order := &entity.Order{}
 	order.UserID = helper.GetUserIDFromContext(c)
@@ -78,11 +97,15 @@ func (uc *OrderUsecase) CreateOrder(c *gin.Context, payload *entity.OrderPayload
 	}
 
 	order.TotalPrice += totalPrice
-	// if err := uc.orderRepo.UpdateOrder(ctx, order); err != nil {
-	// 	return nil, errors.Wrap(fmt.Errorf("uc.repo.CreateOrder: %w", err), functionName)
-	// }
+	if err := uc.orderRepo.UpdateOrder(ctx, tx, order); err != nil {
+		return nil, errors.Wrap(fmt.Errorf("uc.repo.CreateOrder: %w", err), functionName)
+	}
 
-	// TODO: commit trx
+	// Commit transaction
+	if err = uc.dbTransactionRepo.CommitTransactionQuery(ctx, tx); err != nil {
+		return nil, errors.Wrap(fmt.Errorf("uc.dbTransactionRepo.CommitTransactionQuery: %w", err), functionName)
+	}
+	rollbackProcess = false
 
 	return order, nil
 }

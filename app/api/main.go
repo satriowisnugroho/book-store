@@ -35,6 +35,7 @@ func main() {
 	defer postgresDb.Db.Close()
 
 	// Initialize repositories
+	dbTransactionRepo := postgres.NewPostgresTransactionRepository(postgresDb.Db)
 	bookRepo := postgres.NewBookRepository(postgresDb.Db)
 	orderRepo := postgres.NewOrderRepository(postgresDb.Db)
 	orderItemRepo := postgres.NewOrderItemRepository(postgresDb.Db)
@@ -42,7 +43,7 @@ func main() {
 
 	// Initialize usecases
 	bookUsecase := usecase.NewBookUsecase(bookRepo)
-	orderUsecase := usecase.NewOrderUsecase(bookRepo, orderRepo, orderItemRepo)
+	orderUsecase := usecase.NewOrderUsecase(dbTransactionRepo, bookRepo, orderRepo, orderItemRepo)
 	userUsecase := usecase.NewUserUsecase(cfg.JWTSecret, passwordHasher, userRepo)
 
 	// HTTP Server
