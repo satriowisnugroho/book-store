@@ -397,9 +397,6 @@ const docTemplate_swagger = `{
         "entity.Order": {
             "type": "object",
             "properties": {
-                "book_id": {
-                    "type": "integer"
-                },
                 "created_at": {
                     "type": "string"
                 },
@@ -409,11 +406,11 @@ const docTemplate_swagger = `{
                 "id": {
                     "type": "integer"
                 },
-                "price": {
-                    "type": "integer"
-                },
-                "quantity": {
-                    "type": "integer"
+                "order_items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.OrderItem"
+                    }
                 },
                 "total_price": {
                     "type": "integer"
@@ -426,7 +423,42 @@ const docTemplate_swagger = `{
                 }
             }
         },
-        "entity.OrderPayload": {
+        "entity.OrderItem": {
+            "type": "object",
+            "properties": {
+                "book": {
+                    "$ref": "#/definitions/entity.Book"
+                },
+                "book_id": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "fee": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "order_id": {
+                    "type": "integer"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "total_item_price": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.OrderItemPayload": {
             "type": "object",
             "properties": {
                 "book_id": {
@@ -434,6 +466,17 @@ const docTemplate_swagger = `{
                 },
                 "quantity": {
                     "type": "integer"
+                }
+            }
+        },
+        "entity.OrderPayload": {
+            "type": "object",
+            "properties": {
+                "order_items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.OrderItemPayload"
+                    }
                 }
             }
         },

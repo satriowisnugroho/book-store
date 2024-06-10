@@ -24,6 +24,27 @@ definitions:
     type: object
   entity.Order:
     properties:
+      created_at:
+        type: string
+      fee:
+        type: integer
+      id:
+        type: integer
+      order_items:
+        items:
+          $ref: '#/definitions/entity.OrderItem'
+        type: array
+      total_price:
+        type: integer
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  entity.OrderItem:
+    properties:
+      book:
+        $ref: '#/definitions/entity.Book'
       book_id:
         type: integer
       created_at:
@@ -32,23 +53,30 @@ definitions:
         type: integer
       id:
         type: integer
+      order_id:
+        type: integer
       price:
         type: integer
       quantity:
         type: integer
-      total_price:
+      total_item_price:
         type: integer
       updated_at:
         type: string
-      user_id:
-        type: integer
     type: object
-  entity.OrderPayload:
+  entity.OrderItemPayload:
     properties:
       book_id:
         type: integer
       quantity:
         type: integer
+    type: object
+  entity.OrderPayload:
+    properties:
+      order_items:
+        items:
+          $ref: '#/definitions/entity.OrderItemPayload'
+        type: array
     type: object
   entity.RegisterPayload:
     properties:
