@@ -74,6 +74,10 @@ func (uc *UserUsecase) Login(ctx context.Context, payload *entity.LoginPayload) 
 
 	user, err := uc.userRepo.GetUserByEmail(ctx, payload.Email)
 	if err != nil {
+		if _, ok := err.(response.CustomError); ok {
+			return nil, err
+		}
+
 		return nil, errors.Wrap(fmt.Errorf("uc.userRepo.GetUserByEmail: %w", err), functionName)
 	}
 

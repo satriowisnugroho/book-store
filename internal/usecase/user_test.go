@@ -103,6 +103,12 @@ func TestLogin(t *testing.T) {
 			wantErr:  true,
 		},
 		{
+			name:     "record not found",
+			ctx:      context.Background(),
+			rUserErr: response.ErrNotFound,
+			wantErr:  true,
+		},
+		{
 			name: "failed to compare password",
 			ctx:  context.Background(),
 			rUserRes: &entity.User{
