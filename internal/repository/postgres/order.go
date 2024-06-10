@@ -15,7 +15,7 @@ import (
 
 // OrderRepositoryInterface define contract for order related functions to repository
 type OrderRepositoryInterface interface {
-	CreateOrder(ctx context.Context, order *entity.Order) error
+	CreateOrder(ctx context.Context, dbTrx interface{}, order *entity.Order) error
 	GetOrdersByUserID(ctx context.Context, userID, limit, offset int) ([]*entity.Order, error)
 	GetOrdersByUserIDCount(ctx context.Context, userID int) (int, error)
 	UpdateOrder(ctx context.Context, dbTrx interface{}, order *entity.Order) error
@@ -68,7 +68,7 @@ func (r *OrderRepository) fetch(ctx context.Context, query string, args ...inter
 }
 
 // CreateOrder insert order data into database
-func (r *OrderRepository) CreateOrder(ctx context.Context, order *entity.Order) error {
+func (r *OrderRepository) CreateOrder(ctx context.Context, dbTrx interface{}, order *entity.Order) error {
 	functionName := "OrderRepository.CreateOrder"
 
 	if err := helper.CheckDeadline(ctx); err != nil {
@@ -81,7 +81,10 @@ func (r *OrderRepository) CreateOrder(ctx context.Context, order *entity.Order) 
 
 	query := fmt.Sprintf(`INSERT INTO %s (%s) VALUES (%s) RETURNING id`, OrderTableName, OrderCreationAttributes, EnumeratedBindvars(OrderCreationColumns))
 
-	err := r.db.QueryRowContext(ctx, query,
+	tx := Tx(r.db, dbTrx)
+	err := tx.QueryRowxContext(
+		ctx,
+		query,
 		order.UserID,
 		order.Fee,
 		order.TotalPrice,

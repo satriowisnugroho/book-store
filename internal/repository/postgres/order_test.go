@@ -61,7 +61,7 @@ func TestCreateOrder(t *testing.T) {
 			dbx := sqlx.NewDb(db, "mock")
 			repo := postgres.NewOrderRepository(dbx)
 
-			err = repo.CreateOrder(tc.ctx, tc.input)
+			err = repo.CreateOrder(tc.ctx, nil, tc.input)
 			assert.Equal(t, tc.wantErr, err != nil)
 			if !tc.wantErr {
 				assert.Equal(t, 1, tc.input.ID)

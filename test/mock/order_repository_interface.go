@@ -14,17 +14,17 @@ type OrderRepositoryInterface struct {
 	mock.Mock
 }
 
-// CreateOrder provides a mock function with given fields: ctx, order
-func (_m *OrderRepositoryInterface) CreateOrder(ctx context.Context, order *entity.Order) error {
-	ret := _m.Called(ctx, order)
+// CreateOrder provides a mock function with given fields: ctx, dbTrx, order
+func (_m *OrderRepositoryInterface) CreateOrder(ctx context.Context, dbTrx interface{}, order *entity.Order) error {
+	ret := _m.Called(ctx, dbTrx, order)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateOrder")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *entity.Order) error); ok {
-		r0 = rf(ctx, order)
+	if rf, ok := ret.Get(0).(func(context.Context, interface{}, *entity.Order) error); ok {
+		r0 = rf(ctx, dbTrx, order)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -88,6 +88,24 @@ func (_m *OrderRepositoryInterface) GetOrdersByUserIDCount(ctx context.Context, 
 	}
 
 	return r0, r1
+}
+
+// UpdateOrder provides a mock function with given fields: ctx, dbTrx, order
+func (_m *OrderRepositoryInterface) UpdateOrder(ctx context.Context, dbTrx interface{}, order *entity.Order) error {
+	ret := _m.Called(ctx, dbTrx, order)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateOrder")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, interface{}, *entity.Order) error); ok {
+		r0 = rf(ctx, dbTrx, order)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // NewOrderRepositoryInterface creates a new instance of OrderRepositoryInterface. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

@@ -53,7 +53,7 @@ func (uc *OrderUsecase) CreateOrder(c *gin.Context, payload *entity.OrderPayload
 	order.UserID = helper.GetUserIDFromContext(c)
 	order.Fee = config.ServiceFee
 	order.TotalPrice = config.ServiceFee
-	if err := uc.orderRepo.CreateOrder(ctx, order); err != nil {
+	if err := uc.orderRepo.CreateOrder(ctx, nil, order); err != nil {
 		return nil, errors.Wrap(fmt.Errorf("uc.repo.CreateOrder: %w", err), functionName)
 	}
 
