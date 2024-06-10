@@ -15,12 +15,14 @@ import (
 
 func TestGetBooks(t *testing.T) {
 	testcases := []struct {
-		name      string
-		ctx       context.Context
-		fetchErr  error
-		fetchRows []string
-		expected  []*entity.Book
-		wantErr   bool
+		name        string
+		ctx         context.Context
+		fetchErr    error
+		fetchRows   []string
+		payload     entity.GetBooksPayload
+		filterQuery string
+		expected    []*entity.Book
+		wantErr     bool
 	}{
 		{
 			name:    "deadline context",
@@ -40,11 +42,13 @@ func TestGetBooks(t *testing.T) {
 			wantErr:   true,
 		},
 		{
-			name:      "success",
-			ctx:       context.Background(),
-			fetchRows: postgres.BookColumns,
-			expected:  []*entity.Book{{}},
-			wantErr:   false,
+			name:        "success",
+			ctx:         context.Background(),
+			fetchRows:   postgres.BookColumns,
+			payload:     entity.GetBooksPayload{TitleKeyword: "foo"},
+			filterQuery: "title ILIKE \\$1",
+			expected:    []*entity.Book{{}},
+			wantErr:     false,
 		},
 	}
 
@@ -57,8 +61,14 @@ func TestGetBooks(t *testing.T) {
 			defer db.Close()
 
 			expectedQuery := "SELECT .+ FROM .+"
+			if tc.filterQuery != "" {
+				expectedQuery = expectedQuery + " WHERE " + tc.filterQuery
+			}
+			expectedQuery = expectedQuery + " OFFSET .+ LIMIT .+"
+			mockExpectedQuery := mock.ExpectQuery(expectedQuery)
+
 			if tc.fetchErr != nil {
-				mock.ExpectQuery(expectedQuery).WillReturnError(tc.fetchErr)
+				mockExpectedQuery.WillReturnError(tc.fetchErr)
 			} else {
 				rows := sqlmock.NewRows(tc.fetchRows)
 				if tc.expected != nil {
@@ -74,12 +84,12 @@ func TestGetBooks(t *testing.T) {
 					rows = rows.AddRow(1)
 				}
 
-				mock.ExpectQuery(expectedQuery).WillReturnRows(rows)
+				mockExpectedQuery.WillReturnRows(rows)
 			}
 
 			dbx := sqlx.NewDb(db, "mock")
 			repo := postgres.NewBookRepository(dbx)
-			result, err := repo.GetBooks(tc.ctx, entity.GetBooksPayload{})
+			result, err := repo.GetBooks(tc.ctx, tc.payload)
 			assert.Equal(t, tc.wantErr, err != nil, err)
 			if !tc.wantErr {
 				assert.EqualValues(t, tc.expected, result)
@@ -90,11 +100,13 @@ func TestGetBooks(t *testing.T) {
 
 func TestGetBooksCount(t *testing.T) {
 	testcases := []struct {
-		name     string
-		ctx      context.Context
-		fetchErr error
-		expected int
-		wantErr  bool
+		name        string
+		ctx         context.Context
+		fetchErr    error
+		payload     entity.GetBooksPayload
+		filterQuery string
+		expected    int
+		wantErr     bool
 	}{
 		{
 			name:    "deadline context",
@@ -108,10 +120,12 @@ func TestGetBooksCount(t *testing.T) {
 			wantErr:  true,
 		},
 		{
-			name:     "success",
-			ctx:      context.Background(),
-			expected: 1,
-			wantErr:  false,
+			name:        "success",
+			ctx:         context.Background(),
+			payload:     entity.GetBooksPayload{TitleKeyword: "foo"},
+			filterQuery: "title ILIKE \\$1",
+			expected:    1,
+			wantErr:     false,
 		},
 	}
 
@@ -123,7 +137,12 @@ func TestGetBooksCount(t *testing.T) {
 			}
 			defer db.Close()
 
-			mockExpectedQuery := mock.ExpectQuery("SELECT COUNT\\(\\*\\) FROM .+")
+			expectedQuery := "SELECT COUNT\\(\\*\\) FROM .+"
+			if tc.filterQuery != "" {
+				expectedQuery = expectedQuery + " WHERE " + tc.filterQuery
+			}
+			mockExpectedQuery := mock.ExpectQuery(expectedQuery)
+
 			if tc.fetchErr != nil {
 				mockExpectedQuery.WillReturnError(tc.fetchErr)
 			} else {
@@ -135,7 +154,7 @@ func TestGetBooksCount(t *testing.T) {
 
 			dbx := sqlx.NewDb(db, "mock")
 			repo := postgres.NewBookRepository(dbx)
-			result, err := repo.GetBooksCount(tc.ctx)
+			result, err := repo.GetBooksCount(tc.ctx, tc.payload)
 			assert.Equal(t, tc.wantErr, err != nil, err)
 			if !tc.wantErr {
 				assert.EqualValues(t, tc.expected, result)

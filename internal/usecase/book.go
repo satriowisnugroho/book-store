@@ -37,7 +37,7 @@ func (uc *BookUsecase) GetBooks(ctx context.Context, payload entity.GetBooksPayl
 		return nil, 0, errors.Wrap(fmt.Errorf("uc.repo.GetBooks: %w", err), functionName)
 	}
 
-	count, err := uc.repo.GetBooksCount(ctx)
+	count, err := uc.repo.GetBooksCount(ctx, payload)
 	if err != nil {
 		return nil, 0, errors.Wrap(fmt.Errorf("uc.repo.GetBooksCount: %w", err), functionName)
 	}

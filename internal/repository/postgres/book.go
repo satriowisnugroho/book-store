@@ -16,7 +16,7 @@ import (
 // BookRepositoryInterface define contract for book related functions to repository
 type BookRepositoryInterface interface {
 	GetBooks(ctx context.Context, payload entity.GetBooksPayload) ([]*entity.Book, error)
-	GetBooksCount(ctx context.Context) (int, error)
+	GetBooksCount(ctx context.Context, payload entity.GetBooksPayload) (int, error)
 	GetBookByID(ctx context.Context, bookID int) (*entity.Book, error)
 }
 
@@ -69,8 +69,9 @@ func (r *BookRepository) GetBooks(ctx context.Context, payload entity.GetBooksPa
 		return []*entity.Book{}, errors.Wrap(err, functionName)
 	}
 
-	query := fmt.Sprintf("SELECT %s FROM %s OFFSET %d LIMIT %d", BookAttributes, BookTableName, payload.Offset, payload.Limit)
-	rows, err := r.fetch(ctx, query)
+	filterQuery, args := r.constructSearchQuery(payload)
+	query := fmt.Sprintf("SELECT %s FROM %s %s OFFSET %d LIMIT %d", BookAttributes, BookTableName, filterQuery, payload.Offset, payload.Limit)
+	rows, err := r.fetch(ctx, query, args...)
 	if err != nil {
 		return rows, errors.Wrap(err, functionName)
 	}
@@ -79,16 +80,17 @@ func (r *BookRepository) GetBooks(ctx context.Context, payload entity.GetBooksPa
 }
 
 // GetBooksCount query to get the count of books
-func (r *BookRepository) GetBooksCount(ctx context.Context) (int, error) {
+func (r *BookRepository) GetBooksCount(ctx context.Context, payload entity.GetBooksPayload) (int, error) {
 	functionName := "BookRepository.GetBooksCount"
 	if err := helper.CheckDeadline(ctx); err != nil {
 		return 0, errors.Wrap(err, functionName)
 	}
 
-	query := fmt.Sprintf("SELECT COUNT(*) FROM %s", BookTableName)
+	filterQuery, args := r.constructSearchQuery(payload)
+	query := fmt.Sprintf("SELECT COUNT(*) FROM %s %s", BookTableName, filterQuery)
 
 	count := 0
-	rows := r.db.QueryRowxContext(ctx, query)
+	rows := r.db.QueryRowxContext(ctx, query, args...)
 	if err := rows.Scan(&count); err != nil {
 		return count, errors.Wrap(err, functionName)
 	}
@@ -115,4 +117,25 @@ func (r *BookRepository) GetBookByID(ctx context.Context, bookID int) (*entity.B
 	}
 
 	return rows[0], nil
+}
+
+// constructSearchQuery construct search query
+func (r *BookRepository) constructSearchQuery(payload entity.GetBooksPayload) (string, []interface{}) {
+	wheres := []string{}
+	args := []interface{}{}
+
+	if len(payload.TitleKeyword) >= 3 {
+		wheres = append(wheres, "title ILIKE ?")
+		args = append(args, fmt.Sprintf("%%%s%%", payload.TitleKeyword))
+	}
+
+	filterQuery := ""
+	if len(wheres) > 0 {
+		filterQuery = fmt.Sprintf("WHERE %s", strings.Join(wheres, " AND "))
+
+		// Rebind the query with $ bind type
+		filterQuery = sqlx.Rebind(sqlx.DOLLAR, filterQuery)
+	}
+
+	return filterQuery, args
 }

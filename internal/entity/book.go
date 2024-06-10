@@ -16,6 +16,7 @@ type Book struct {
 
 // GetBooksPayload holds login payload representative
 type GetBooksPayload struct {
-	Offset int
-	Limit  int
+	TitleKeyword string
+	Offset       int
+	Limit        int
 }

@@ -74,9 +74,9 @@ func (_m *BookRepositoryInterface) GetBooks(ctx context.Context, payload entity.
 	return r0, r1
 }
 
-// GetBooksCount provides a mock function with given fields: ctx
-func (_m *BookRepositoryInterface) GetBooksCount(ctx context.Context) (int, error) {
-	ret := _m.Called(ctx)
+// GetBooksCount provides a mock function with given fields: ctx, payload
+func (_m *BookRepositoryInterface) GetBooksCount(ctx context.Context, payload entity.GetBooksPayload) (int, error) {
+	ret := _m.Called(ctx, payload)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetBooksCount")
@@ -84,17 +84,17 @@ func (_m *BookRepositoryInterface) GetBooksCount(ctx context.Context) (int, erro
 
 	var r0 int
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context) (int, error)); ok {
-		return rf(ctx)
+	if rf, ok := ret.Get(0).(func(context.Context, entity.GetBooksPayload) (int, error)); ok {
+		return rf(ctx, payload)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context) int); ok {
-		r0 = rf(ctx)
+	if rf, ok := ret.Get(0).(func(context.Context, entity.GetBooksPayload) int); ok {
+		r0 = rf(ctx, payload)
 	} else {
 		r0 = ret.Get(0).(int)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
-		r1 = rf(ctx)
+	if rf, ok := ret.Get(1).(func(context.Context, entity.GetBooksPayload) error); ok {
+		r1 = rf(ctx, payload)
 	} else {
 		r1 = ret.Error(1)
 	}

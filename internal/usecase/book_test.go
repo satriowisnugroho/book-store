@@ -51,7 +51,7 @@ func TestGetBooks(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			bookRepo := &testmock.BookRepositoryInterface{}
 			bookRepo.On("GetBooks", mock.Anything, mock.Anything).Return(tc.rGetBooksRes, tc.rGetBooksErr)
-			bookRepo.On("GetBooksCount", mock.Anything).Return(tc.rGetBooksCountRes, tc.rGetBooksCountErr)
+			bookRepo.On("GetBooksCount", mock.Anything, mock.Anything).Return(tc.rGetBooksCountRes, tc.rGetBooksCountErr)
 
 			uc := usecase.NewBookUsecase(bookRepo)
 			_, _, err := uc.GetBooks(tc.ctx, entity.GetBooksPayload{})
