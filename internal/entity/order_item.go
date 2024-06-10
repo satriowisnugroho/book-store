@@ -13,7 +13,6 @@ type OrderItem struct {
 	BookID         int       `json:"book_id"`
 	Quantity       int       `json:"quantity"`
 	Price          int       `json:"price"`
-	Fee            int       `json:"fee"`
 	TotalItemPrice int       `json:"total_item_price"`
 	Book           *Book     `json:"book"`
 	CreatedAt      time.Time `json:"created_at"`

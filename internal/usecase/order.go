@@ -68,37 +68,48 @@ func (uc *OrderUsecase) CreateOrder(c *gin.Context, payload *entity.OrderPayload
 		}
 	}()
 
+	// Create order
 	order := &entity.Order{}
 	order.UserID = helper.GetUserIDFromContext(c)
 	order.Fee = config.ServiceFee
 	order.TotalPrice = config.ServiceFee
-	if err := uc.orderRepo.CreateOrder(ctx, nil, order); err != nil {
-		return nil, errors.Wrap(fmt.Errorf("uc.repo.CreateOrder: %w", err), functionName)
+	if err := uc.orderRepo.CreateOrder(ctx, tx, order); err != nil {
+		return nil, errors.Wrap(fmt.Errorf("uc.orderRepo.CreateOrder: %w", err), functionName)
 	}
 
-	totalPrice := 0
 	for _, orderItemPayload := range payload.OrderItems {
+		// Get book
 		book, err := uc.bookRepo.GetBookByID(ctx, orderItemPayload.BookID)
 		if err != nil {
 			if err == response.ErrNotFound {
 				return nil, err
 			}
 
-			return nil, errors.Wrap(fmt.Errorf("uc.repo.GetBookByID: %w", err), functionName)
+			return nil, errors.Wrap(fmt.Errorf("uc.bookRepo.GetBookByID: %w", err), functionName)
 		}
 
+		// Create order item
 		orderItem := &entity.OrderItem{}
 		orderItem.OrderID = order.ID
 		orderItem.BookID = book.ID
 		orderItem.Quantity = orderItemPayload.Quantity
 		orderItem.Price = book.Price
 		orderItem.TotalItemPrice = orderItemPayload.Quantity * book.Price
-		totalPrice += orderItem.TotalItemPrice
+		if err := uc.orderItemRepo.CreateOrderItem(ctx, tx, orderItem); err != nil {
+			return nil, errors.Wrap(fmt.Errorf("uc.orderItemRepo.CreateOrderItem: %w", err), functionName)
+		}
+
+		// Calculate order total price
+		order.TotalPrice += orderItem.TotalItemPrice
+
+		// Assign data for response
+		orderItem.Book = book
+		order.OrderItems = append(order.OrderItems, orderItem)
 	}
 
-	order.TotalPrice += totalPrice
+	// Update order total price
 	if err := uc.orderRepo.UpdateOrder(ctx, tx, order); err != nil {
-		return nil, errors.Wrap(fmt.Errorf("uc.repo.CreateOrder: %w", err), functionName)
+		return nil, errors.Wrap(fmt.Errorf("uc.orderRepo.UpdateOrder: %w", err), functionName)
 	}
 
 	// Commit transaction

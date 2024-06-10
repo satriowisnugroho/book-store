@@ -13,7 +13,6 @@ type OrderItem struct {
 	BookID         int       `db:"book_id"`
 	Quantity       int       `db:"quantity"`
 	Price          int       `db:"price"`
-	Fee            int       `db:"fee"`
 	TotalItemPrice int       `db:"total_item_price"`
 	CreatedAt      time.Time `db:"created_at"`
 	UpdatedAt      time.Time `db:"updated_at"`
@@ -27,7 +26,6 @@ func (e *OrderItem) ToEntity() *entity.OrderItem {
 		BookID:         e.BookID,
 		Quantity:       e.Quantity,
 		Price:          e.Price,
-		Fee:            e.Fee,
 		TotalItemPrice: e.TotalItemPrice,
 		CreatedAt:      e.CreatedAt,
 		UpdatedAt:      e.UpdatedAt,

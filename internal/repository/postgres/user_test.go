@@ -58,7 +58,7 @@ func TestCreateUser(t *testing.T) {
 			}
 			defer db.Close()
 
-			expectedQuery := "INSERT INTO .+ (.+) VALUES (.+) RETURNING id"
+			expectedQuery := "INSERT INTO users (.+) VALUES (.+) RETURNING id"
 			if tc.createErr != nil {
 				mock.ExpectQuery(expectedQuery).WillReturnError(tc.createErr)
 			} else {
@@ -128,7 +128,7 @@ func TestGetUserByEmail(t *testing.T) {
 			}
 			defer db.Close()
 
-			mockExpectedQuery := mock.ExpectQuery("^SELECT .+ FROM .+ WHERE email = .+ LIMIT 1")
+			mockExpectedQuery := mock.ExpectQuery("^SELECT .+ FROM users WHERE email = .+ LIMIT 1")
 			if tc.fetchErr != nil {
 				mockExpectedQuery.WillReturnError(tc.fetchErr)
 			} else {

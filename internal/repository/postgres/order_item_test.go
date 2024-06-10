@@ -49,7 +49,7 @@ func TestCreateOrderItem(t *testing.T) {
 			}
 			defer db.Close()
 
-			expectedQuery := "INSERT INTO .+ (.+) VALUES (.+) RETURNING id"
+			expectedQuery := "INSERT INTO order_items (.+) VALUES (.+) RETURNING id"
 			if tc.createErr != nil {
 				mock.ExpectQuery(expectedQuery).WillReturnError(tc.createErr)
 			} else {
@@ -61,7 +61,7 @@ func TestCreateOrderItem(t *testing.T) {
 			dbx := sqlx.NewDb(db, "mock")
 			repo := postgres.NewOrderItemRepository(dbx)
 
-			err = repo.CreateOrderItem(tc.ctx, tc.input)
+			err = repo.CreateOrderItem(tc.ctx, nil, tc.input)
 			assert.Equal(t, tc.wantErr, err != nil)
 			if !tc.wantErr {
 				assert.Equal(t, 1, tc.input.ID)
@@ -113,7 +113,7 @@ func TestGetOrderItemsByOrderID(t *testing.T) {
 			}
 			defer db.Close()
 
-			mockExpectedQuery := mock.ExpectQuery("^SELECT .+ FROM .+")
+			mockExpectedQuery := mock.ExpectQuery("^SELECT .+ FROM order_items WHERE order_id = .+")
 			if tc.fetchErr != nil {
 				mockExpectedQuery.WillReturnError(tc.fetchErr)
 			} else {
@@ -125,7 +125,6 @@ func TestGetOrderItemsByOrderID(t *testing.T) {
 						tc.expected[0].BookID,
 						tc.expected[0].Quantity,
 						tc.expected[0].Price,
-						tc.expected[0].Fee,
 						tc.expected[0].TotalItemPrice,
 						tc.expected[0].CreatedAt,
 						tc.expected[0].UpdatedAt,

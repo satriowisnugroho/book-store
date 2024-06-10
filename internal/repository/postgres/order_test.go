@@ -49,7 +49,7 @@ func TestCreateOrder(t *testing.T) {
 			}
 			defer db.Close()
 
-			expectedQuery := "INSERT INTO .+ (.+) VALUES (.+) RETURNING id"
+			expectedQuery := "INSERT INTO orders (.+) VALUES (.+) RETURNING id"
 			if tc.createErr != nil {
 				mock.ExpectQuery(expectedQuery).WillReturnError(tc.createErr)
 			} else {
@@ -180,7 +180,7 @@ func TestGetOrdersByUserIDCount(t *testing.T) {
 			}
 			defer db.Close()
 
-			mockExpectedQuery := mock.ExpectQuery("SELECT COUNT\\(\\*\\) FROM .+ WHERE user_id = .+")
+			mockExpectedQuery := mock.ExpectQuery("SELECT COUNT\\(\\*\\) FROM orders WHERE user_id = .+")
 			if tc.fetchErr != nil {
 				mockExpectedQuery.WillReturnError(tc.fetchErr)
 			} else {

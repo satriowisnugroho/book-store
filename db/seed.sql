@@ -24,9 +24,20 @@ COPY public.books (isbn, title, price, created_at, updated_at) FROM stdin;
 
 TRUNCATE public.orders RESTART IDENTITY CASCADE;
 
-COPY public.orders (user_id, book_id, quantity, price, fee, total_price, created_at, updated_at) FROM stdin;
-1	1	4	25000	1000	101000	2024-06-07 22:43:27.750419	2024-06-07 22:43:27.750419
-2	2	4	20000	1000	81000	2024-06-07 22:43:27.750419	2024-06-07 22:43:27.750419
+COPY public.orders (user_id, fee, total_price, created_at, updated_at) FROM stdin;
+1	1000	101000	2024-06-07 22:43:27.750419	2024-06-07 22:43:27.750419
+2	1000	81000	2024-06-07 22:43:27.750419	2024-06-07 22:43:27.750419
+\.
+
+--
+-- Data for Name: order_items; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+TRUNCATE public.order_items RESTART IDENTITY CASCADE;
+
+COPY public.order_items (order_id, book_id, quantity, price, total_item_price, created_at, updated_at) FROM stdin;
+1	1	4	25000	101000	2024-06-07 22:43:27.750419	2024-06-07 22:43:27.750419
+2	2	4	20000	81000	2024-06-07 22:43:27.750419	2024-06-07 22:43:27.750419
 \.
 
 --

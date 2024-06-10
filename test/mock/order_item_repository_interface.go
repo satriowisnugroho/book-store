@@ -14,17 +14,17 @@ type OrderItemRepositoryInterface struct {
 	mock.Mock
 }
 
-// CreateOrderItem provides a mock function with given fields: ctx, orderItem
-func (_m *OrderItemRepositoryInterface) CreateOrderItem(ctx context.Context, orderItem *entity.OrderItem) error {
-	ret := _m.Called(ctx, orderItem)
+// CreateOrderItem provides a mock function with given fields: ctx, dbTrx, orderItem
+func (_m *OrderItemRepositoryInterface) CreateOrderItem(ctx context.Context, dbTrx interface{}, orderItem *entity.OrderItem) error {
+	ret := _m.Called(ctx, dbTrx, orderItem)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateOrderItem")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *entity.OrderItem) error); ok {
-		r0 = rf(ctx, orderItem)
+	if rf, ok := ret.Get(0).(func(context.Context, interface{}, *entity.OrderItem) error); ok {
+		r0 = rf(ctx, dbTrx, orderItem)
 	} else {
 		r0 = ret.Error(0)
 	}

@@ -69,6 +69,14 @@ func TestCreateOrder(t *testing.T) {
 			wantErr:  true,
 		},
 		{
+			name:                "failed to create order item",
+			ctx:                 fixture.GinCtxBackground(),
+			payload:             &entity.OrderPayload{OrderItems: []entity.OrderItemPayload{{Quantity: 1}}},
+			rBookRes:            &entity.Book{},
+			rCreateOrderItemErr: errors.New("error create order item"),
+			wantErr:             true,
+		},
+		{
 			name:            "failed to update order",
 			ctx:             fixture.GinCtxBackground(),
 			payload:         &entity.OrderPayload{OrderItems: []entity.OrderItemPayload{{Quantity: 1}}},

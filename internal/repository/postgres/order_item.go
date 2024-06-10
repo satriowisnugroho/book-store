@@ -15,7 +15,7 @@ import (
 
 // OrderItemRepositoryInterface define contract for orderItem related functions to repository
 type OrderItemRepositoryInterface interface {
-	CreateOrderItem(ctx context.Context, orderItem *entity.OrderItem) error
+	CreateOrderItem(ctx context.Context, dbTrx interface{}, orderItem *entity.OrderItem) error
 	GetOrderItemsByOrderID(ctx context.Context, orderID int) ([]*entity.OrderItem, error)
 }
 
@@ -28,9 +28,14 @@ var (
 	// OrderItemTableName hold table name for order_items
 	OrderItemTableName = "order_items"
 	// OrderItemColumns list all columns on order_items table
-	OrderItemColumns = []string{"id", "order_id", "book_id", "quantity", "price", "fee", "total_item_price", "created_at", "updated_at"}
+	OrderItemColumns = []string{"id", "order_id", "book_id", "quantity", "price", "total_item_price", "created_at", "updated_at"}
 	// OrderItemAttributes hold string format of all order_items table columns
 	OrderItemAttributes = strings.Join(OrderItemColumns, ", ")
+
+	// OrderItemCreationColumns list all columns used for create orderItem
+	OrderItemCreationColumns = OrderItemColumns[1:]
+	// OrderItemCreationAttributes hold string format of all creation orderItem columns
+	OrderItemCreationAttributes = strings.Join(OrderItemCreationColumns, ", ")
 )
 
 // NewOrderItemRepository create initiate orderItem repository with given database
@@ -61,7 +66,7 @@ func (r *OrderItemRepository) fetch(ctx context.Context, query string, args ...i
 }
 
 // CreateOrderItem insert orderItem data into database
-func (r *OrderItemRepository) CreateOrderItem(ctx context.Context, orderItem *entity.OrderItem) error {
+func (r *OrderItemRepository) CreateOrderItem(ctx context.Context, dbTrx interface{}, orderItem *entity.OrderItem) error {
 	functionName := "OrderItemRepository.CreateOrderItem"
 
 	if err := helper.CheckDeadline(ctx); err != nil {
@@ -72,14 +77,16 @@ func (r *OrderItemRepository) CreateOrderItem(ctx context.Context, orderItem *en
 	orderItem.CreatedAt = now
 	orderItem.UpdatedAt = now
 
-	query := fmt.Sprintf(`INSERT INTO %s (%s) VALUES (%s) RETURNING id`, OrderTableName, OrderCreationAttributes, EnumeratedBindvars(OrderCreationColumns))
+	query := fmt.Sprintf(`INSERT INTO %s (%s) VALUES (%s) RETURNING id`, OrderItemTableName, OrderItemCreationAttributes, EnumeratedBindvars(OrderItemCreationColumns))
 
-	err := r.db.QueryRowContext(ctx, query,
+	tx := Tx(r.db, dbTrx)
+	err := tx.QueryRowxContext(
+		ctx,
+		query,
 		orderItem.OrderID,
 		orderItem.BookID,
 		orderItem.Quantity,
 		orderItem.Price,
-		orderItem.Fee,
 		orderItem.TotalItemPrice,
 		orderItem.CreatedAt,
 		orderItem.UpdatedAt,
@@ -99,7 +106,7 @@ func (r *OrderItemRepository) GetOrderItemsByOrderID(ctx context.Context, orderI
 		return nil, errors.Wrap(err, functionName)
 	}
 
-	query := fmt.Sprintf("SELECT %s FROM %s", OrderItemAttributes, OrderItemTableName)
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE order_id = %d", OrderItemAttributes, OrderItemTableName, orderID)
 	rows, err := r.fetch(ctx, query, orderID)
 	if err != nil {
 		return nil, errors.Wrap(err, functionName)

@@ -60,7 +60,7 @@ func TestGetBooks(t *testing.T) {
 			}
 			defer db.Close()
 
-			expectedQuery := "SELECT .+ FROM .+"
+			expectedQuery := "SELECT .+ FROM books"
 			if tc.filterQuery != "" {
 				expectedQuery = expectedQuery + " WHERE " + tc.filterQuery
 			}
@@ -137,7 +137,7 @@ func TestGetBooksCount(t *testing.T) {
 			}
 			defer db.Close()
 
-			expectedQuery := "SELECT COUNT\\(\\*\\) FROM .+"
+			expectedQuery := "SELECT COUNT\\(\\*\\) FROM books"
 			if tc.filterQuery != "" {
 				expectedQuery = expectedQuery + " WHERE " + tc.filterQuery
 			}
@@ -212,7 +212,7 @@ func TestGetBookByID(t *testing.T) {
 			}
 			defer db.Close()
 
-			mockExpectedQuery := mock.ExpectQuery("^SELECT .+ FROM .+ WHERE id = .+ LIMIT 1")
+			mockExpectedQuery := mock.ExpectQuery("^SELECT .+ FROM books WHERE id = .+ LIMIT 1")
 			if tc.fetchErr != nil {
 				mockExpectedQuery.WillReturnError(tc.fetchErr)
 			} else {
