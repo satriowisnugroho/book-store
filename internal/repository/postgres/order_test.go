@@ -113,9 +113,9 @@ func TestGetOrdersByUserID(t *testing.T) {
 			}
 			defer db.Close()
 
-			expectedQuery := "SELECT .+ FROM .+ WHERE user_id = .+"
+			mockExpectedQuery := mock.ExpectQuery("SELECT .+ FROM .+ WHERE user_id = .+ LIMIT .+ OFFSET .+")
 			if tc.fetchErr != nil {
-				mock.ExpectQuery(expectedQuery).WillReturnError(tc.fetchErr)
+				mockExpectedQuery.WillReturnError(tc.fetchErr)
 			} else {
 				rows := sqlmock.NewRows(tc.fetchRows)
 				if tc.expected != nil {
@@ -134,7 +134,7 @@ func TestGetOrdersByUserID(t *testing.T) {
 					rows = rows.AddRow(1)
 				}
 
-				mock.ExpectQuery(expectedQuery).WillReturnRows(rows)
+				mockExpectedQuery.WillReturnRows(rows)
 			}
 
 			dbx := sqlx.NewDb(db, "mock")

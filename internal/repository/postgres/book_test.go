@@ -64,7 +64,7 @@ func TestGetBooks(t *testing.T) {
 			if tc.filterQuery != "" {
 				expectedQuery = expectedQuery + " WHERE " + tc.filterQuery
 			}
-			expectedQuery = expectedQuery + " OFFSET .+ LIMIT .+"
+			expectedQuery = expectedQuery + " LIMIT .+ OFFSET .+"
 			mockExpectedQuery := mock.ExpectQuery(expectedQuery)
 
 			if tc.fetchErr != nil {

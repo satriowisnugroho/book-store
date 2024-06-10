@@ -70,7 +70,7 @@ func (r *BookRepository) GetBooks(ctx context.Context, payload entity.GetBooksPa
 	}
 
 	filterQuery, args := r.constructSearchQuery(payload)
-	query := fmt.Sprintf("SELECT %s FROM %s %s OFFSET %d LIMIT %d", BookAttributes, BookTableName, filterQuery, payload.Offset, payload.Limit)
+	query := fmt.Sprintf("SELECT %s FROM %s %s LIMIT %d OFFSET %d", BookAttributes, BookTableName, filterQuery, payload.Limit, payload.Offset)
 	rows, err := r.fetch(ctx, query, args...)
 	if err != nil {
 		return rows, errors.Wrap(err, functionName)
