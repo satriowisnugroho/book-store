@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
@@ -15,6 +16,7 @@ import (
 
 // OrderItemRepositoryInterface define contract for orderItem related functions to repository
 type OrderItemRepositoryInterface interface {
+	CreateOrderItem(ctx context.Context, orderItem *entity.OrderItem) error
 	GetOrderItemByID(ctx context.Context, orderItemID int) (*entity.OrderItem, error)
 }
 
@@ -57,6 +59,37 @@ func (r *OrderItemRepository) fetch(ctx context.Context, query string, args ...i
 	}
 
 	return result, nil
+}
+
+// CreateOrderItem insert orderItem data into database
+func (r *OrderRepository) CreateOrderItem(ctx context.Context, orderItem *entity.OrderItem) error {
+	functionName := "OrderItemRepository.CreateOrderItem"
+
+	if err := helper.CheckDeadline(ctx); err != nil {
+		return errors.Wrap(err, functionName)
+	}
+
+	now := time.Now()
+	orderItem.CreatedAt = now
+	orderItem.UpdatedAt = now
+
+	query := fmt.Sprintf(`INSERT INTO %s (%s) VALUES (%s) RETURNING id`, OrderTableName, OrderCreationAttributes, EnumeratedBindvars(OrderCreationColumns))
+
+	err := r.db.QueryRowContext(ctx, query,
+		orderItem.OrderID,
+		orderItem.BookID,
+		orderItem.Quantity,
+		orderItem.Price,
+		orderItem.Fee,
+		orderItem.TotalItemPrice,
+		orderItem.CreatedAt,
+		orderItem.UpdatedAt,
+	).Scan(&orderItem.ID)
+	if err != nil {
+		return errors.Wrap(err, functionName)
+	}
+
+	return nil
 }
 
 // GetOrderItemByID query to get orderItem by ID
