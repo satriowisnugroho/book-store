@@ -113,7 +113,7 @@ func TestGetOrdersByUserID(t *testing.T) {
 			}
 			defer db.Close()
 
-			mockExpectedQuery := mock.ExpectQuery("SELECT .+ FROM orders WHERE user_id = .+ LIMIT .+ OFFSET .+")
+			mockExpectedQuery := mock.ExpectQuery("SELECT .+ FROM orders WHERE user_id = .+ ORDER BY .+ LIMIT .+ OFFSET .+")
 			if tc.fetchErr != nil {
 				mockExpectedQuery.WillReturnError(tc.fetchErr)
 			} else {

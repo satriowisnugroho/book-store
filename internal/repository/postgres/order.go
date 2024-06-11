@@ -106,7 +106,7 @@ func (r *OrderRepository) GetOrdersByUserID(ctx context.Context, userID, limit, 
 		return []*entity.Order{}, errors.Wrap(err, functionName)
 	}
 
-	query := fmt.Sprintf("SELECT %s FROM %s WHERE user_id = %d LIMIT %d OFFSET %d", OrderAttributes, OrderTableName, userID, limit, offset)
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE user_id = %d ORDER BY created_at DESC LIMIT %d OFFSET %d", OrderAttributes, OrderTableName, userID, limit, offset)
 
 	rows, err := r.fetch(ctx, query)
 	if err != nil {
